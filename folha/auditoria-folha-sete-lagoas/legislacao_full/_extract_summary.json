@@ -1,0 +1,82 @@
+[
+  {
+    "id": "lc_174_14",
+    "metodo": "win32com(.doc)",
+    "chars": 2431,
+    "arquivo_saida": "C:\\Users\\victo\\OneDrive\\Documentos\\Python\\projetos\\custos\\folha\\auditoria-folha-sete-lagoas\\legislacao_full\\lc_174_14.txt",
+    "ok": true,
+    "erro": null
+  },
+  {
+    "id": "lc_183_15",
+    "metodo": "win32com(.doc)",
+    "chars": 162521,
+    "arquivo_saida": "C:\\Users\\victo\\OneDrive\\Documentos\\Python\\projetos\\custos\\folha\\auditoria-folha-sete-lagoas\\legislacao_full\\lc_183_15.txt",
+    "ok": true,
+    "erro": null
+  },
+  {
+    "id": "lc_190_16",
+    "metodo": "pdfplumber",
+    "chars": 154744,
+    "arquivo_saida": "C:\\Users\\victo\\OneDrive\\Documentos\\Python\\projetos\\custos\\folha\\auditoria-folha-sete-lagoas\\legislacao_full\\lc_190_16.txt",
+    "ok": true,
+    "erro": null
+  },
+  {
+    "id": "lc_192_16",
+    "metodo": "win32com(.doc)",
+    "chars": 119511,
+    "arquivo_saida": "C:\\Users\\victo\\OneDrive\\Documentos\\Python\\projetos\\custos\\folha\\auditoria-folha-sete-lagoas\\legislacao_full\\lc_192_16.txt",
+    "ok": true,
+    "erro": null
+  },
+  {
+    "id": "lc_235_20",
+    "metodo": "pdfplumber",
+    "chars": 11068,
+    "arquivo_saida": "C:\\Users\\victo\\OneDrive\\Documentos\\Python\\projetos\\custos\\folha\\auditoria-folha-sete-lagoas\\legislacao_full\\lc_235_20.txt",
+    "ok": true,
+    "erro": null
+  },
+  {
+    "id": "lc_263_22",
+    "metodo": "win32com(.bin->docx)",
+    "chars": 12371,
+    "arquivo_saida": "C:\\Users\\victo\\OneDrive\\Documentos\\Python\\projetos\\custos\\folha\\auditoria-folha-sete-lagoas\\legislacao_full\\lc_263_22.txt",
+    "ok": true,
+    "erro": null
+  },
+  {
+    "id": "lc_285_23",
+    "metodo": "win32com(.doc)",
+    "chars": 28331,
+    "arquivo_saida": "C:\\Users\\victo\\OneDrive\\Documentos\\Python\\projetos\\custos\\folha\\auditoria-folha-sete-lagoas\\legislacao_full\\lc_285_23.txt",
+    "ok": true,
+    "erro": null
+  },
+  {
+    "id": "lei_6544_2001",
+    "metodo": "pdfplumber",
+    "chars": 1732,
+    "arquivo_saida": "C:\\Users\\victo\\OneDrive\\Documentos\\Python\\projetos\\custos\\folha\\auditoria-folha-sete-lagoas\\legislacao_full\\lei_6544_2001.txt",
+    "ok": true,
+    "erro": null
+  },
+  {
+    "id": "lei_7757_2009",
+    "metodo": "pdfplumber",
+    "chars": 3244,
+    "arquivo_saida": "C:\\Users\\victo\\OneDrive\\Documentos\\Python\\projetos\\custos\\folha\\auditoria-folha-sete-lagoas\\legislacao_full\\lei_7757_2009.txt",
+    "ok": true,
+    "erro": null
+  },
+  {
+    "id": "lei_9526_2023",
+    "metodo": "win32com(.doc)",
+    "chars": 26120,
+    "arquivo_saida": "C:\\Users\\victo\\OneDrive\\Documentos\\Python\\projetos\\custos\\folha\\auditoria-folha-sete-lagoas\\legislacao_full\\lei_9526_2023.txt",
+    "ok": true,
+    "erro": null
+  }
+]

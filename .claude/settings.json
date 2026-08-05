@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(diff cardapio_unificado.html cardapio_unificado_artifact.html)",
+      "Bash(wc -l /tmp_diff_result.txt)",
+      "Bash(head -60 /tmp_diff_result.txt)",
+      "Bash(rm -f /tmp_diff_result.txt)"
+    ]
+  }
+}

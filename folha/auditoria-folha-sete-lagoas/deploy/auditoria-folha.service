@@ -1,0 +1,18 @@
+[Unit]
+Description=Auditoria de custo da folha (Saude / Sete Lagoas) - agente noturno
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=/root/projetos/auditoria-folha-sete-lagoas
+ExecStart=/root/projetos/auditoria-folha-sete-lagoas/venv/bin/python -m agent.run_agent
+TimeoutStartSec=18000
+Restart=on-failure
+RestartSec=30
+# logs nativos via journald: journalctl -u auditoria-folha.service
+StandardOutput=append:/root/projetos/auditoria-folha-sete-lagoas/logs/agent.log
+StandardError=append:/root/projetos/auditoria-folha-sete-lagoas/logs/agent.err
+
+[Install]
+WantedBy=multi-user.target

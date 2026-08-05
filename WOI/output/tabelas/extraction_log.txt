@@ -1,0 +1,56 @@
+=== Extraction Log — SICOM 2025 — Sete Lagoas (3167202) ===
+
+
+--- SAUDE ---
+  despesa: 3459 linhas
+    Meses: Jan, Fev, Mar, Abr, Mai, Jun, Jul, Ago, Set, Out, Nov, Dez (12 meses)
+    Programas: 10
+      - 2050 - OPERACOES ESPECIAIS
+      - 2051 - GESTAO ADMINISTRATIVA
+      - 2057 - PROMOCAO DOS DIREITOS DA CRIANCA
+      - 2058 - PROTECAO SOCIAL BASICA
+      - 2072 - ASSISTENCIA FARMACEUTICA
+      - 2073 - ATENCAO BASICA EM SAUDE (ABS)
+      - 2074 - GESTAO DO SUS
+      - 2075 - SUS - INVESTIMENTO
+      - 2076 - MEDIA E ALTA COMPLEXIDADE - MAC
+      - 2077 - VIGILANCIA EM SAUDE
+  empenho: 6209 linhas
+    Meses: Jan, Fev, Mar, Abr, Mai, Jun, Jul, Ago, Set, Out, Nov, Dez (12 meses)
+    Programas: 9
+      - 2050 - OPERACOES ESPECIAIS
+      - 2051 - GESTAO ADMINISTRATIVA
+      - 2058 - PROTECAO SOCIAL BASICA
+      - 2072 - ASSISTENCIA FARMACEUTICA
+      - 2073 - ATENCAO BASICA EM SAUDE (ABS)
+      - 2074 - GESTAO DO SUS
+      - 2075 - SUS - INVESTIMENTO
+      - 2076 - MEDIA E ALTA COMPLEXIDADE - MAC
+      - 2077 - VIGILANCIA EM SAUDE
+  pagamento: 18187 linhas
+  credorEmpenho: 6209 linhas
+
+--- EDUCACAO ---
+  despesa: 1949 linhas
+    Meses: Jan, Fev, Mar, Abr, Mai, Jun, Jul, Ago, Set, Out, Nov, Dez (12 meses)
+    Programas: 9
+      - 2050 - OPERACOES ESPECIAIS
+      - 2051 - GESTAO ADMINISTRATIVA
+      - 2055 - CORDENACAO DE POLITICAS
+      - 2057 - PROMOCAO DOS DIREITOS DA CRIANCA
+      - 2063 - EDUCACAO PROFISSIONAL E TECNOLOGIA
+      - 2064 - EDUCACAO NIVEL SUPERIOR
+      - 2065 - TRABALHO EMPREGO E RENDA
+      - 2084 - UNIVERSALIZACAO
+      - 2085 - EDUCACAO
+  empenho: 2468 linhas
+    Meses: Jan, Fev, Mar, Abr, Mai, Jun, Jul, Ago, Set, Out, Nov, Dez (12 meses)
+    Programas: 6
+      - 2050 - OPERACOES ESPECIAIS
+      - 2051 - GESTAO ADMINISTRATIVA
+      - 2055 - CORDENACAO DE POLITICAS
+      - 2057 - PROMOCAO DOS DIREITOS DA CRIANCA
+      - 2084 - UNIVERSALIZACAO
+      - 2085 - EDUCACAO
+  pagamento: 4437 linhas
+  credorEmpenho: 2468 linhas

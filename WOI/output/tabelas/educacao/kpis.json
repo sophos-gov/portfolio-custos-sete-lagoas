@@ -1,0 +1,18 @@
+{
+  "secretaria": "educacao",
+  "total_pago": 283782204.02,
+  "total_empenhado": 295362894.56,
+  "total_previsto": 279343518.0,
+  "num_fornecedores": 312,
+  "num_empenhos": 2468,
+  "meses_cobertos": 12,
+  "periodo": "Jan–Dez 2025",
+  "mes_pico": 12,
+  "mes_pico_nome": "Dez",
+  "valor_pico": 48538698.96,
+  "mes_vale": 1,
+  "mes_vale_nome": "Jan",
+  "valor_vale": 10438888.790000001,
+  "media_mensal": 23648517.001666665,
+  "programa_top": "2084 - UNIVERSALIZACAO"
+}

@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Custos da Saúde — Sete Lagoas 2025</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<style>
+:root {
+    --azul-escuro:  #1B3A5C;
+    --azul-medio:   #2E86AB;
+    --azul-claro:   #A3CEF1;
+    --verde:        #28A745;
+    --vermelho:     #E63946;
+    --amarelo:      #F4A261;
+    --cinza-escuro: #343A40;
+    --cinza-medio:  #6C757D;
+    --fundo:        #F8F9FA;
+    --branco:       #FFFFFF;
+    --fonte: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--fonte); background: var(--fundo); color: var(--cinza-escuro); line-height: 1.6; }
+
+.nav-sidebar {
+    position: fixed; left: 0; top: 0;
+    width: 220px; height: 100vh;
+    background: var(--azul-escuro);
+    padding: 1.5rem 1rem; overflow-y: auto; z-index: 100;
+}
+.nav-logo { color: white; font-weight: 700; margin-bottom: 1.5rem; font-size: 0.9rem; line-height: 1.4; }
+.nav-logo small { opacity: 0.6; display: block; font-size: 0.75rem; margin-top: 0.25rem; }
+.nav-sidebar a {
+    display: block; color: rgba(255,255,255,0.7); text-decoration: none;
+    padding: 0.45rem 0.75rem; border-radius: 4px; font-size: 0.82rem;
+    margin-bottom: 0.2rem; transition: all 0.2s;
+}
+.nav-sidebar a:hover, .nav-sidebar a.active { background: var(--azul-medio); color: var(--branco); }
+
+.main-content { margin-left: 220px; padding: 2rem 2.5rem; max-width: 1100px; }
+
+.hero {
+    background: linear-gradient(135deg, var(--azul-escuro), var(--azul-medio));
+    color: white; padding: 2.5rem; border-radius: 16px; margin-bottom: 2rem;
+}
+.hero h1 { font-size: 1.9rem; margin-bottom: 0.5rem; }
+.hero .periodo { font-size: 0.85rem; opacity: 0.7; margin-bottom: 1rem; }
+.action-title-hero { font-size: 1.1rem; opacity: 0.92; font-weight: 400; max-width: 750px; line-height: 1.5; }
+.kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 1rem; margin-top: 2rem; }
+.kpi-card { background: rgba(255,255,255,0.15); border-radius: 10px; padding: 1.1rem; text-align: center; }
+.kpi-label { font-size: 0.72rem; opacity: 0.8; text-transform: uppercase; letter-spacing: 0.06em; }
+.kpi-value { font-size: 1.5rem; font-weight: 700; margin: 0.2rem 0; }
+.kpi-sub   { font-size: 0.78rem; opacity: 0.7; }
+
+.section {
+    background: var(--branco); border-radius: 12px; padding: 2rem 2.5rem;
+    margin-bottom: 1.5rem; box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+.section-id { font-size: 0.68rem; color: var(--azul-medio); text-transform: uppercase;
+              letter-spacing: 0.09em; font-weight: 600; margin-bottom: 0.4rem; }
+.action-title {
+    font-size: 1.15rem; font-weight: 600; color: var(--azul-escuro);
+    border-left: 4px solid var(--azul-medio); padding-left: 1rem;
+    margin-bottom: 1.5rem; line-height: 1.45;
+}
+.chart-container { position: relative; height: 380px; margin: 1rem 0 1.5rem; }
+.chart-container.tall { height: 460px; }
+.chart-container.short { height: 280px; }
+
+.data-table { width: 100%; border-collapse: collapse; font-size: 0.86rem; margin-top: 1rem; }
+.data-table th { background: var(--azul-escuro); color: white; padding: 0.55rem 0.8rem;
+                 text-align: left; font-weight: 500; }
+.data-table td { padding: 0.45rem 0.8rem; border-bottom: 1px solid var(--fundo); }
+.data-table tr:hover td { background: var(--fundo); }
+.heat-high { background: #FDECEA; color: var(--vermelho); font-weight: 600; }
+.heat-med  { background: #FFF8E1; color: #856404; }
+.heat-low  { background: #E8F5E9; color: #2E7D32; }
+.num-col { text-align: right; font-variant-numeric: tabular-nums; }
+.pct-bar { display: inline-block; height: 8px; background: var(--azul-claro); border-radius: 4px; margin-left: 6px; vertical-align: middle; }
+
+.rec-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; }
+.rec-card { border-left: 4px solid var(--verde); padding: 1.2rem;
+            background: #F0FFF4; border-radius: 0 10px 10px 0; }
+.rec-label { font-size: 0.68rem; font-weight: 700; color: var(--azul-medio);
+             text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.3rem; }
+.rec-insight    { font-size: 0.92rem; color: var(--cinza-escuro); margin-bottom: 0.5rem; }
+.rec-implicacao { font-size: 0.85rem; color: var(--cinza-medio); margin-bottom: 0.7rem; }
+.rec-acao { font-size: 0.85rem; font-weight: 600; color: var(--azul-escuro); }
+.rec-acao::before { content: "→ "; color: var(--verde); }
+
+.analise-cruzada {
+    background: #EBF4FF; border-left: 4px solid var(--azul-medio);
+    padding: 1.2rem 1.5rem; border-radius: 0 10px 10px 0;
+    font-size: 0.95rem; line-height: 1.7; color: var(--cinza-escuro);
+    margin-bottom: 1.5rem;
+}
+.alertas-titulo { font-size: 0.72rem; font-weight: 700; color: var(--vermelho);
+                  text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.75rem; }
+.alerta-grid { display: flex; flex-direction: column; gap: 0.6rem; margin-bottom: 1.75rem; }
+.alerta-card { border-left: 4px solid var(--vermelho); background: #FFF5F5;
+               padding: 0.85rem 1.2rem; border-radius: 0 8px 8px 0;
+               font-size: 0.875rem; line-height: 1.55; color: var(--cinza-escuro); }
+.alerta-card strong { color: var(--vermelho); }
+
+@media (max-width: 768px) {
+    .nav-sidebar  { display: none; }
+    .main-content { margin-left: 0; padding: 1rem; }
+    .hero         { padding: 1.5rem; }
+    .hero h1      { font-size: 1.35rem; }
+    .chart-container { height: 260px; }
+}
+</style>
+</head>
+<body>
+
+<nav class="nav-sidebar">
+    <div class="nav-logo">🏥 Custos Saúde<small>Sete Lagoas · 2025</small></div>
+    <a href="#hero">Resumo Executivo</a>
+    <a href="#programas">Composição por Programa</a>
+    <a href="#natureza">Natureza de Despesa</a>
+    <a href="#acoes">Por Ação</a>
+    <a href="#fornecedores">Fornecedores</a>
+    <a href="#categorias">Categorias de Custo</a>
+    <a href="#mensal">Evolução Mensal</a>
+    <a href="#fontes">Fontes de Recurso</a>
+    <a href="#sintese">Síntese Analítica</a>
+    <a href="#recomendacoes">Recomendações</a>
+</nav>
+
+<div class="main-content">
+
+<!-- HERO -->
+<section class="hero" id="hero">
+    <h1>Custos da Saúde — Sete Lagoas 2025</h1>
+    <div class="periodo">🏥 Jan–Dez 2025 · Sete Lagoas (MG) · SICOM/TCE-MG</div>
+    <p class="action-title-hero">R$ 503 milhões pagos em 2025 com 76% concentrados em apenas 2 fornecedores — dependência crítica exige ação imediata do secretário</p>
+    <div class="kpi-grid">
+        <div class="kpi-card">
+            <div class="kpi-label">Total Pago</div>
+            <div class="kpi-value">R$ 503,2M</div>
+            <div class="kpi-sub">R$ 503.204.201</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-label">Total Empenhado</div>
+            <div class="kpi-value">R$ 577,7M</div>
+            <div class="kpi-sub">R$ 577.684.089</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-label">Fornecedores</div>
+            <div class="kpi-value">621</div>
+            <div class="kpi-sub">únicos no período</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-label">Empenhos</div>
+            <div class="kpi-value">6,209</div>
+            <div class="kpi-sub">compromissos em 2025</div>
+        </div>
+    </div>
+</section>
+
+<!-- PROGRAMAS -->
+<section class="section" id="programas">
+    <div class="section-id">Seção 2 — Composição por Programa</div>
+    <div class="action-title">MAC absorve 69% do orçamento enquanto SUS-Investimento executa apenas 9,4% do previsto — expansão da rede está paralisada</div>
+    <div class="chart-container"><canvas id="chartProg"></canvas></div>
+    <table class="data-table">
+        <thead><tr><th>Programa</th><th class="num-col">Valor Pago</th>
+        <th class="num-col">% Total</th><th class="num-col">Empenhado</th></tr></thead>
+        <tbody><tr>
+            <td>2076 - MEDIA E ALTA COMPLEXIDADE - MAC</td>
+            <td class="num-col">R$ 347.355.123</td>
+            <td class="num-col heat-high">69.0%<span class="pct-bar" style="width:103px"></span></td>
+            <td class="num-col">R$ 392.726.292</td>
+        </tr><tr>
+            <td>2073 - ATENCAO BASICA EM SAUDE (ABS)</td>
+            <td class="num-col">R$ 82.773.020</td>
+            <td class="num-col heat-med">16.4%<span class="pct-bar" style="width:24px"></span></td>
+            <td class="num-col">R$ 93.240.915</td>
+        </tr><tr>
+            <td>2074 - GESTAO DO SUS</td>
+            <td class="num-col">R$ 37.192.075</td>
+            <td class="num-col heat-low">7.4%<span class="pct-bar" style="width:11px"></span></td>
+            <td class="num-col">R$ 39.670.412</td>
+        </tr><tr>
+            <td>2077 - VIGILANCIA EM SAUDE</td>
+            <td class="num-col">R$ 26.911.218</td>
+            <td class="num-col heat-low">5.3%<span class="pct-bar" style="width:8px"></span></td>
+            <td class="num-col">R$ 30.807.925</td>
+        </tr><tr>
+            <td>2072 - ASSISTENCIA FARMACEUTICA</td>
+            <td class="num-col">R$ 3.701.772</td>
+            <td class="num-col heat-low">0.7%<span class="pct-bar" style="width:1px"></span></td>
+            <td class="num-col">R$ 4.808.598</td>
+        </tr><tr>
+            <td>2075 - SUS - INVESTIMENTO</td>
+            <td class="num-col">R$ 2.522.394</td>
+            <td class="num-col heat-low">0.5%<span class="pct-bar" style="width:0px"></span></td>
+            <td class="num-col">R$ 13.647.026</td>
+        </tr><tr>
+            <td>2050 - OPERACOES ESPECIAIS</td>
+            <td class="num-col">R$ 2.465.540</td>
+            <td class="num-col heat-low">0.5%<span class="pct-bar" style="width:0px"></span></td>
+            <td class="num-col">R$ 2.465.540</td>
+        </tr><tr>
+            <td>2051 - GESTAO ADMINISTRATIVA</td>
+            <td class="num-col">R$ 240.864</td>
+            <td class="num-col heat-low">0.1%<span class="pct-bar" style="width:0px"></span></td>
+            <td class="num-col">R$ 243.130</td>
+        </tr><tr>
+            <td>2058 - PROTECAO SOCIAL BASICA</td>
+            <td class="num-col">R$ 42.195</td>
+            <td class="num-col heat-low">0.0%<span class="pct-bar" style="width:0px"></span></td>
+            <td class="num-col">R$ 74.252</td>
+        </tr><tr>
+            <td>2057 - PROMOCAO DOS DIREITOS DA CRIANCA</td>
+            <td class="num-col">R$ 0</td>
+            <td class="num-col heat-low">0.0%<span class="pct-bar" style="width:0px"></span></td>
+            <td class="num-col">R$ 0</td>
+        </tr></tbody></table>
+</section>
+
+<!-- NATUREZA -->
+<section class="section" id="natureza">
+    <div class="section-id">Seção 3 — Natureza de Despesa</div>
+    <div class="action-title">Pessoal (57%) e Serviços PJ (29%) somam 86% dos pagamentos, restando apenas 2,3% para material hospitalar — operação refém da folha</div>
+    <div class="chart-container short"><canvas id="chartNat"></canvas></div>
+</section>
+
+<!-- AÇÕES -->
+<section class="section" id="acoes">
+    <div class="section-id">Seção 4 — Composição por Ação</div>
+    <div class="action-title">3 ações concentram 83,5% da execução e remuneração de servidores sozinha consome R$ 266 milhões, mais que todo o MAC excluída a folha</div>
+    <div class="chart-container tall"><canvas id="chartAcoes"></canvas></div>
+</section>
+
+<!-- FORNECEDORES -->
+<section class="section" id="fornecedores">
+    <div class="section-id">Seção 5 — Top Fornecedores</div>
+    <div class="action-title">Município de Sete Lagoas e Irmandade das Graças recebem 76,2% dos R$ 503 milhões — risco sistêmico de fornecedor único na alta complexidade</div>
+    <div class="chart-container"><canvas id="chartForn"></canvas></div>
+    <div class="chart-container short" style="margin-top:1.5rem">
+        <canvas id="chartPareto"></canvas>
+    </div>
+    <table class="data-table">
+        <thead><tr><th>#</th><th>Fornecedor</th><th class="num-col">Total Pago</th>
+        <th class="num-col">% Total</th><th class="num-col">% Acumulado</th></tr></thead>
+        <tbody><tr>
+            <td>1</td>
+            <td>MUNICIPIO DE SETE LAGOAS</td>
+            <td class="num-col">R$ 292.333.301</td>
+            <td class="num-col heat-high">55.6%</td>
+            <td class="num-col">55.6%</td>
+        </tr><tr>
+            <td>2</td>
+            <td>IRMANDADE DE NOSSA SENHORA DAS GRACAS</td>
+            <td class="num-col">R$ 108.288.877</td>
+            <td class="num-col heat-high">20.6%</td>
+            <td class="num-col">76.2%</td>
+        </tr><tr>
+            <td>3</td>
+            <td>INSTITUTO NACIONAL DO SEGURO SOCIAL</td>
+            <td class="num-col">R$ 36.349.520</td>
+            <td class="num-col heat-med">6.9%</td>
+            <td class="num-col">83.2%</td>
+        </tr><tr>
+            <td>4</td>
+            <td>SERMEP SERVICOS MEDICOS S.A</td>
+            <td class="num-col">R$ 6.698.336</td>
+            <td class="num-col ">1.3%</td>
+            <td class="num-col">84.4%</td>
+        </tr><tr>
+            <td>5</td>
+            <td>ARCOLIMP SERVICOS GERAIS LTDA</td>
+            <td class="num-col">R$ 6.568.817</td>
+            <td class="num-col ">1.2%</td>
+            <td class="num-col">85.7%</td>
+        </tr><tr>
+            <td>6</td>
+            <td>ASSOCIACAO DE PAIS E AMIGOS DOS EXCEPCIONAIS</td>
+            <td class="num-col">R$ 4.820.958</td>
+            <td class="num-col ">0.9%</td>
+            <td class="num-col">86.6%</td>
+        </tr><tr>
+            <td>7</td>
+            <td>BOM SABOR ALIMENTACAO LTDA</td>
+            <td class="num-col">R$ 4.373.635</td>
+            <td class="num-col ">0.8%</td>
+            <td class="num-col">87.4%</td>
+        </tr><tr>
+            <td>8</td>
+            <td>CONSORCIO INTERMUNICIPAL DE SAUDE DA MICROREGIAO D</td>
+            <td class="num-col">R$ 3.000.945</td>
+            <td class="num-col ">0.6%</td>
+            <td class="num-col">88.0%</td>
+        </tr><tr>
+            <td>9</td>
+            <td>CONSORCIO INTERMUNICIPAL DE SAUDE E DE POLITICAS D</td>
+            <td class="num-col">R$ 2.974.669</td>
+            <td class="num-col ">0.6%</td>
+            <td class="num-col">88.6%</td>
+        </tr><tr>
+            <td>10</td>
+            <td>PUBLITECH SOFTWARES LTDA</td>
+            <td class="num-col">R$ 2.143.122</td>
+            <td class="num-col ">0.4%</td>
+            <td class="num-col">89.0%</td>
+        </tr><tr>
+            <td>11</td>
+            <td>CONSORCIO INTERMUNICIPAL ALIANCA PARA A SAUDE CIAS</td>
+            <td class="num-col">R$ 2.051.800</td>
+            <td class="num-col ">0.4%</td>
+            <td class="num-col">89.4%</td>
+        </tr><tr>
+            <td>12</td>
+            <td>ATMOSFERA GESTAO E HIGIENIZACAO DE TEXTEIS S.A.</td>
+            <td class="num-col">R$ 1.771.659</td>
+            <td class="num-col ">0.3%</td>
+            <td class="num-col">89.7%</td>
+        </tr><tr>
+            <td>13</td>
+            <td>CEMIG DISTRIBUICAO S.A</td>
+            <td class="num-col">R$ 1.736.050</td>
+            <td class="num-col ">0.3%</td>
+            <td class="num-col">90.0%</td>
+        </tr><tr>
+            <td>14</td>
+            <td>CRISTALIA PRODUTOS QUIMICOS FARMACEUTICOS LTDA</td>
+            <td class="num-col">R$ 1.628.056</td>
+            <td class="num-col ">0.3%</td>
+            <td class="num-col">90.3%</td>
+        </tr><tr>
+            <td>15</td>
+            <td>MG MEDICAL COMERCIO E IMPORTACAO LTDA</td>
+            <td class="num-col">R$ 1.617.391</td>
+            <td class="num-col ">0.3%</td>
+            <td class="num-col">90.7%</td>
+        </tr><tr>
+            <td>16</td>
+            <td>MAXIMILIANO MIRANDA DE SIQUEIRA</td>
+            <td class="num-col">R$ 1.411.609</td>
+            <td class="num-col ">0.3%</td>
+            <td class="num-col">90.9%</td>
+        </tr><tr>
+            <td>17</td>
+            <td>AMGS COMERCIO E REPRESENTACOES LTDA</td>
+            <td class="num-col">R$ 1.244.768</td>
+            <td class="num-col ">0.2%</td>
+            <td class="num-col">91.2%</td>
+        </tr><tr>
+            <td>18</td>
+            <td>WHITE MARTINS GASES INDUSTRIAIS DO NORDESTE LTDA.</td>
+            <td class="num-col">R$ 1.043.271</td>
+            <td class="num-col ">0.2%</td>
+            <td class="num-col">91.4%</td>
+        </tr><tr>
+            <td>19</td>
+            <td>HDL LOGISTICA HOSPITALAR LTDA.</td>
+            <td class="num-col">R$ 1.014.278</td>
+            <td class="num-col ">0.2%</td>
+            <td class="num-col">91.6%</td>
+        </tr><tr>
+            <td>20</td>
+            <td>SERVICO AUTONOMO DE AGUA, ESGOTO E SANEAMENTO URBA</td>
+            <td class="num-col">R$ 1.011.957</td>
+            <td class="num-col ">0.2%</td>
+            <td class="num-col">91.8%</td>
+        </tr></tbody></table>
+</section>
+
+<!-- CATEGORIAS -->
+<section class="section" id="categorias">
+    <div class="section-id">Seção 6 — Categorias de Custo</div>
+    <div class="action-title">Serviços terceirizados empenharam R$ 213 milhões (35,8%) superando material hospitalar e medicamentos juntos em 6 vezes — modelo assistencial terceirizado</div>
+    <div class="chart-container short"><canvas id="chartCat"></canvas></div>
+    <table class='data-table' style='font-size:0.78rem;margin-top:1rem'><thead><tr><th>Categoria</th><th class='num-col'>Jan</th><th class='num-col'>Fev</th><th class='num-col'>Mar</th><th class='num-col'>Abr</th><th class='num-col'>Mai</th><th class='num-col'>Jun</th><th class='num-col'>Jul</th><th class='num-col'>Ago</th><th class='num-col'>Set</th><th class='num-col'>Out</th><th class='num-col'>Nov</th><th class='num-col'>Dez</th></tr></thead><tbody><tr><td>Alimentação</td><td class='num-col '>R$ 84 mil</td><td class='num-col heat-high'>R$ 673 mil</td><td class='num-col '>R$ 228 mil</td><td class='num-col heat-med'>R$ 321 mil</td><td class='num-col heat-med'>R$ 328 mil</td><td class='num-col '>R$ 157 mil</td><td class='num-col heat-med'>R$ 575 mil</td><td class='num-col heat-med'>R$ 444 mil</td><td class='num-col heat-med'>R$ 303 mil</td><td class='num-col heat-med'>R$ 289 mil</td><td class='num-col heat-high'>R$ 899 mil</td><td class='num-col heat-med'>R$ 448 mil</td></tr><tr><td>Investimentos</td><td class='num-col '>—</td><td class='num-col '>R$ 21 mil</td><td class='num-col '>R$ 39 mil</td><td class='num-col '>R$ 2 mil</td><td class='num-col '>—</td><td class='num-col heat-high'>R$ 4,0M</td><td class='num-col '>R$ 10 mil</td><td class='num-col heat-med'>R$ 2,3M</td><td class='num-col heat-med'>R$ 1,4M</td><td class='num-col heat-med'>R$ 1,4M</td><td class='num-col heat-med'>R$ 2,1M</td><td class='num-col heat-high'>R$ 3,4M</td></tr><tr><td>Limpeza</td><td class='num-col heat-med'>R$ 115 mil</td><td class='num-col heat-med'>R$ 142 mil</td><td class='num-col heat-high'>R$ 216 mil</td><td class='num-col heat-high'>R$ 257 mil</td><td class='num-col '>R$ 72 mil</td><td class='num-col heat-high'>R$ 295 mil</td><td class='num-col heat-med'>R$ 164 mil</td><td class='num-col heat-med'>R$ 91 mil</td><td class='num-col heat-med'>R$ 98 mil</td><td class='num-col heat-high'>R$ 230 mil</td><td class='num-col heat-med'>R$ 165 mil</td><td class='num-col heat-med'>R$ 144 mil</td></tr><tr><td>Manutenção</td><td class='num-col '>R$ 30 mil</td><td class='num-col heat-med'>R$ 384 mil</td><td class='num-col '>R$ 157 mil</td><td class='num-col '>R$ 2 mil</td><td class='num-col heat-high'>R$ 611 mil</td><td class='num-col heat-med'>R$ 266 mil</td><td class='num-col '>R$ 81 mil</td><td class='num-col '>R$ 96 mil</td><td class='num-col '>R$ 40 mil</td><td class='num-col '>R$ 102 mil</td><td class='num-col '>R$ 171 mil</td><td class='num-col heat-high'>R$ 616 mil</td></tr><tr><td>Material expediente/pedagógico</td><td class='num-col '>—</td><td class='num-col heat-high'>R$ 87 mil</td><td class='num-col heat-med'>R$ 40 mil</td><td class='num-col heat-high'>R$ 84 mil</td><td class='num-col heat-med'>R$ 44 mil</td><td class='num-col heat-med'>R$ 74 mil</td><td class='num-col heat-med'>R$ 50 mil</td><td class='num-col '>R$ 26 mil</td><td class='num-col heat-high'>R$ 84 mil</td><td class='num-col heat-med'>R$ 60 mil</td><td class='num-col heat-high'>R$ 105 mil</td><td class='num-col heat-high'>R$ 115 mil</td></tr><tr><td>Material hospitalar</td><td class='num-col '>R$ 725 mil</td><td class='num-col heat-high'>R$ 2,7M</td><td class='num-col '>R$ 718 mil</td><td class='num-col heat-high'>R$ 3,7M</td><td class='num-col heat-high'>R$ 3,2M</td><td class='num-col heat-med'>R$ 2,1M</td><td class='num-col heat-med'>R$ 2,0M</td><td class='num-col heat-high'>R$ 2,8M</td><td class='num-col '>R$ 976 mil</td><td class='num-col heat-med'>R$ 1,4M</td><td class='num-col heat-med'>R$ 2,6M</td><td class='num-col heat-med'>R$ 2,2M</td></tr><tr><td>Medicamentos</td><td class='num-col '>R$ 229 mil</td><td class='num-col heat-high'>R$ 2,3M</td><td class='num-col '>R$ 425 mil</td><td class='num-col heat-med'>R$ 994 mil</td><td class='num-col '>R$ 612 mil</td><td class='num-col heat-med'>R$ 1,8M</td><td class='num-col '>R$ 194 mil</td><td class='num-col heat-med'>R$ 1,9M</td><td class='num-col '>R$ 333 mil</td><td class='num-col '>R$ 49 mil</td><td class='num-col heat-high'>R$ 2,7M</td><td class='num-col '>R$ 391 mil</td></tr><tr><td>Outros</td><td class='num-col '>R$ 2 mil</td><td class='num-col heat-med'>R$ 53 mil</td><td class='num-col '>R$ 9 mil</td><td class='num-col heat-med'>R$ 61 mil</td><td class='num-col '>R$ 40 mil</td><td class='num-col '>R$ 1 mil</td><td class='num-col '>R$ 36 mil</td><td class='num-col heat-high'>R$ 153 mil</td><td class='num-col '>R$ 33 mil</td><td class='num-col '>R$ 36 mil</td><td class='num-col '>R$ 18 mil</td><td class='num-col heat-med'>R$ 99 mil</td></tr><tr><td>Pessoal</td><td class='num-col heat-med'>R$ 22,5M</td><td class='num-col heat-med'>R$ 24,2M</td><td class='num-col heat-med'>R$ 22,2M</td><td class='num-col heat-med'>R$ 24,1M</td><td class='num-col heat-med'>R$ 23,0M</td><td class='num-col heat-med'>R$ 23,4M</td><td class='num-col heat-med'>R$ 23,5M</td><td class='num-col heat-med'>R$ 22,6M</td><td class='num-col heat-med'>R$ 23,4M</td><td class='num-col heat-med'>R$ 23,0M</td><td class='num-col heat-med'>R$ 26,2M</td><td class='num-col heat-high'>R$ 47,2M</td></tr><tr><td>Previdência</td><td class='num-col heat-med'>R$ 551 mil</td><td class='num-col heat-med'>R$ 516 mil</td><td class='num-col heat-med'>R$ 406 mil</td><td class='num-col heat-med'>R$ 406 mil</td><td class='num-col heat-med'>R$ 467 mil</td><td class='num-col heat-med'>R$ 312 mil</td><td class='num-col heat-med'>R$ 300 mil</td><td class='num-col heat-high'>R$ 771 mil</td><td class='num-col heat-high'>R$ 984 mil</td><td class='num-col heat-high'>R$ 786 mil</td><td class='num-col heat-high'>R$ 779 mil</td><td class='num-col heat-med'>R$ 315 mil</td></tr><tr><td>Serviços terceirizados</td><td class='num-col heat-med'>R$ 15,3M</td><td class='num-col heat-high'>R$ 45,7M</td><td class='num-col '>R$ 10,2M</td><td class='num-col heat-med'>R$ 31,6M</td><td class='num-col heat-med'>R$ 14,5M</td><td class='num-col heat-med'>R$ 16,9M</td><td class='num-col '>R$ 9,2M</td><td class='num-col '>R$ 13,0M</td><td class='num-col '>R$ 12,6M</td><td class='num-col '>R$ 8,7M</td><td class='num-col heat-med'>R$ 14,5M</td><td class='num-col heat-med'>R$ 21,1M</td></tr><tr><td>TI</td><td class='num-col heat-high'>R$ 2,2M</td><td class='num-col '>R$ 165 mil</td><td class='num-col '>R$ 37 mil</td><td class='num-col '>R$ 494 mil</td><td class='num-col '>R$ 328 mil</td><td class='num-col '>R$ 247 mil</td><td class='num-col '>R$ 396 mil</td><td class='num-col '>—</td><td class='num-col '>R$ 209 mil</td><td class='num-col heat-med'>R$ 772 mil</td><td class='num-col '>—</td><td class='num-col heat-med'>R$ 1,0M</td></tr><tr><td>Transferências</td><td class='num-col '>—</td><td class='num-col '>R$ 98 mil</td><td class='num-col '>—</td><td class='num-col '>—</td><td class='num-col heat-high'>R$ 700 mil</td><td class='num-col heat-high'>R$ 527 mil</td><td class='num-col '>—</td><td class='num-col heat-med'>R$ 400 mil</td><td class='num-col '>R$ 15 mil</td><td class='num-col '>R$ 90 mil</td><td class='num-col '>R$ 3 mil</td><td class='num-col '>R$ 1 mil</td></tr><tr><td>Transporte</td><td class='num-col '>—</td><td class='num-col '>—</td><td class='num-col heat-high'>R$ 810 mil</td><td class='num-col '>R$ 30 mil</td><td class='num-col '>—</td><td class='num-col '>—</td><td class='num-col '>R$ 146 mil</td><td class='num-col '>R$ 10 mil</td><td class='num-col '>—</td><td class='num-col '>—</td><td class='num-col '>R$ 180 mil</td><td class='num-col '>R$ 119 mil</td></tr></tbody></table>
+</section>
+
+<!-- MENSAL -->
+<section class="section" id="mensal">
+    <div class="section-id">Seção 7 — Evolução Mensal</div>
+    <div class="action-title">Dezembro explodiu para R$ 66,2 milhões — 58% acima da média e 2,5 vezes o valor de janeiro, sinalizando empenhos de fim de exercício</div>
+    <div class="chart-container"><canvas id="chartMensal"></canvas></div>
+</section>
+
+<!-- FONTES -->
+<section class="section" id="fontes">
+    <div class="section-id">Seção 8 — Fontes de Recurso</div>
+    <div class="action-title">Recursos próprios (47,2%) e transferências SUS (45,5%) dividem quase igualmente o financiamento — município arca com quase metade sem garantia federal</div>
+    <div class="chart-container short"><canvas id="chartFontes"></canvas></div>
+</section>
+
+<!-- SÍNTESE ANALÍTICA -->
+<section class="section" id="sintese">
+    <div class="section-id">Síntese — Análise Consolidada</div>
+    <div class="action-title">Padrões cruzados que revelam o perfil de gestão da Secretaria de Saúde</div>
+    <div class="analise-cruzada">A Secretaria de Saúde opera um modelo de alta dependência estrutural: 76,2% dos pagamentos fluem para apenas dois credores (Município e Irmandade), o que se conecta diretamente à dominância do programa MAC (69%) e à ação de manutenção hospitalar filantrópica (20,3% do total pago). Essa concentração mascara uma execução de investimentos criticamente baixa — o programa SUS-Investimento pagou apenas R$ 2,5 milhões dos R$ 26,9 milhões previstos (9,4%), enquanto o pico de dezembro (R$ 66,2 milhões) sugere empenhos apressados de fim de exercício que inflam artificialmente a execução orçamentária sem correspondência em entregas reais. A Assistência Farmacêutica empenhou R$ 4,8 milhões contra R$ 4,1 milhões previstos (116%), porém pagou apenas R$ 3,7 milhões, indicando restos a pagar que pressionarão 2026. O financiamento quase paritário entre recursos próprios e SUS revela vulnerabilidade fiscal: qualquer redução nas transferências federais forçaria cortes em serviços essenciais, dado que a folha de pessoal sozinha (R$ 286,7 milhões) já supera toda a receita de transferências SUS (R$ 228,9 milhões), evidenciando uma secretaria com baixa margem de manobra e maturidade de gestão comprometida pela rigidez orçamentária.</div>
+    <p class="alertas-titulo">⚠ Alertas Prioritários</p>
+    <div class="alerta-grid"><div class="alerta-card">CRÍTICO — Irmandade de Nossa Senhora das Graças recebeu R$ 108,3 milhões (20,6% do total) com apenas 84 empenhos, resultando em valor médio de R$ 1,29 milhão por empenho; uma interrupção contratual paralisaria a média e alta complexidade do município inteiro</div><div class="alerta-card">GRAVE — Programa SUS-Investimento executou apenas R$ 2,5 milhões de R$ 26,9 milhões previstos (9,4% de pagamento), mas empenhou R$ 13,6 milhões, gerando R$ 11,1 milhões em restos a pagar que podem comprometer o orçamento de 2026 e indicam obras não concluídas</div><div class="alerta-card">ELEVADO — Dezembro concentrou R$ 66,2 milhões (13,2% do total anual), valor 58% superior à média mensal e 152% maior que janeiro, padrão típico de empenhos de encerramento de exercício que comprometem a qualidade do gasto e a transparência fiscal</div></div>
+</section>
+
+<!-- RECOMENDAÇÕES -->
+<section class="section" id="recomendacoes">
+    <div class="section-id">Seção 9 — Recomendações de Gestão</div>
+    <div class="action-title">Quatro ações prioritárias para melhorar a gestão de custos de Saúde</div>
+    <div class="rec-grid">
+        <div class="rec-card">
+            <div class="rec-label">Recomendação 1</div>
+            <p class="rec-insight">A Irmandade de Nossa Senhora das Graças concentra R$ 108,3 milhões (20,6%) com ticket médio de R$ 1,29 milhão por empenho e 411 pagamentos, sendo o único prestador relevante de alta complexidade hospitalar</p>
+            <p class="rec-implicacao">Dependência de fornecedor único na alta complexidade cria risco de interrupção assistencial e elimina poder de negociação de preços, além de fragilizar a posição do município em eventuais reajustes contratuais</p>
+            <p class="rec-acao">Elaborar plano de contingência assistencial com mapeamento de prestadores alternativos num raio de 100 km e iniciar processo de credenciamento complementar de ao menos 2 hospitais para serviços MAC até o primeiro trimestre de 2026</p>
+        </div><div class="rec-card">
+            <div class="rec-label">Recomendação 2</div>
+            <p class="rec-insight">O programa SUS-Investimento pagou R$ 2,5 milhões dos R$ 26,9 milhões previstos (9,4%), enquanto empenhou R$ 13,6 milhões — gerando gap de R$ 11,1 milhões entre empenhado e pago e R$ 13,2 milhões entre previsto e empenhado</p>
+            <p class="rec-implicacao">A baixíssima execução de investimentos significa deterioração progressiva da infraestrutura de saúde, perda potencial de recursos vinculados com prazo de execução e acúmulo de restos a pagar que comprimirão o orçamento futuro</p>
+            <p class="rec-acao">Instituir sala de situação mensal de investimentos com acompanhamento físico-financeiro das obras, identificar os gargalos de cada empenho não liquidado e estabelecer meta de execução de pagamento de ao menos 70% do previsto até dezembro de 2026</p>
+        </div><div class="rec-card">
+            <div class="rec-label">Recomendação 3</div>
+            <p class="rec-insight">Pagamentos em dezembro atingiram R$ 66,2 milhões — 58% acima da média de R$ 41,9 milhões — enquanto janeiro registrou apenas R$ 26,2 milhões, criando amplitude de R$ 40 milhões entre pico e vale</p>
+            <p class="rec-implicacao">A concentração de empenhos no fim do exercício compromete o controle qualitativo do gasto, pressiona o caixa municipal e sugere planejamento orçamentário deficiente com risco de despesas sem lastro em entregas efetivas</p>
+            <p class="rec-acao">Implementar cronograma de execução orçamentária trimestral com limites de empenho por programa, restringindo dezembro a no máximo 10% do orçamento anual e redistribuindo a programação para o primeiro semestre</p>
+        </div><div class="rec-card">
+            <div class="rec-label">Recomendação 4</div>
+            <p class="rec-insight">Pessoal e encargos consomem R$ 286,7 milhões (57% dos pagamentos), superando em R$ 57,8 milhões toda a receita de transferências SUS (R$ 228,9 milhões), enquanto medicamentos representam apenas 1,84% (R$ 9,3 milhões) e material hospitalar 2,27% (R$ 11,4 milhões)</p>
+            <p class="rec-implicacao">A rigidez da folha de pessoal comprime drasticamente os gastos com insumos assistenciais diretos — medicamentos e materiais hospitalares juntos somam apenas 4,1% do total — indicando que a capacidade resolutiva da rede própria pode estar subfinanciada apesar do alto gasto global</p>
+            <p class="rec-acao">Realizar auditoria de produtividade da força de trabalho correlacionando custo de pessoal por unidade de saúde com indicadores de produção (consultas, procedimentos, internações) e redimensionar equipes para liberar ao menos 3% do orçamento de pessoal para reforço de insumos assistenciais em 2026</p>
+        </div>
+    </div>
+</section>
+
+</div><!-- main-content -->
+
+<script>
+
+const CORES = {
+    principal: '#2E86AB', secundaria: '#A3CEF1',
+    verde: '#28A745', vermelho: '#E63946', amarelo: '#F4A261', cinza: '#6C757D',
+    palette: ['#1B3A5C','#2E86AB','#A3CEF1','#28A745','#F4A261','#E63946',
+              '#6C757D','#17BECF','#8C564B','#E377C2','#BCBD22','#9467BD',
+              '#D62728','#FF7F0E']
+};
+
+const formatBRL = v => {
+    if (v == null || isNaN(v)) return 'R$ 0';
+    return 'R$ ' + Math.round(v).toLocaleString('pt-BR');
+};
+const formatM = v => {
+    if (v == null || isNaN(v)) return 'R$ 0';
+    if (Math.abs(v) >= 1e9) return 'R$ ' + (v/1e9).toFixed(1).replace('.',',') + 'B';
+    if (Math.abs(v) >= 1e6) return 'R$ ' + (v/1e6).toFixed(1).replace('.',',') + 'M';
+    if (Math.abs(v) >= 1e3) return 'R$ ' + (v/1e3).toFixed(0) + ' mil';
+    return formatBRL(v);
+};
+
+Chart.defaults.font.family = 'system-ui, -apple-system, "Segoe UI", sans-serif';
+Chart.defaults.font.size   = 12;
+Chart.defaults.color       = '#343A40';
+
+// Nav scroll highlight
+window.addEventListener('scroll', () => {
+    const sections = document.querySelectorAll('.section[id], .hero[id]');
+    const navLinks = document.querySelectorAll('.nav-sidebar a');
+    let current = '';
+    sections.forEach(s => {
+        if (window.scrollY >= s.offsetTop - 120) current = s.id;
+    });
+    navLinks.forEach(a => {
+        a.classList.remove('active');
+        if (a.getAttribute('href') === '#' + current) a.classList.add('active');
+    });
+});
+
+
+// ---- DATA ----
+const PROG_LABELS  = ["2076 - MEDIA E ALTA COMPLEXIDADE - MAC", "2073 - ATENCAO BASICA EM SAUDE (ABS)", "2074 - GESTAO DO SUS", "2077 - VIGILANCIA EM SAUDE", "2072 - ASSISTENCIA FARMACEUTICA", "2075 - SUS - INVESTIMENTO", "2050 - OPERACOES ESPECIAIS", "2051 - GESTAO ADMINISTRATIVA", "2058 - PROTECAO SOCIAL BASICA", "2057 - PROMOCAO DOS DIREITOS DA CRIANCA"];
+const PROG_VALUES  = [347355123.3, 82773020.07, 37192074.92, 26911217.7, 3701772.35, 2522394.35, 2465539.87, 240863.81, 42194.72, 0.0];
+const NAT_LABELS   = ["Pessoal e Encargos", "Servi\u00e7os PJ", "Servi\u00e7os PF", "Material Hospitalar", "Outros", "Medicamentos", "Materiais de Consumo", "TI e Serv. Tecnol\u00f3gicos", "Investimentos", "Alimenta\u00e7\u00e3o", "Aposentadorias / Pens\u00f5es", "Limpeza e Higiene", "Manuten\u00e7\u00e3o", "Transf. Institui\u00e7\u00f5es Privadas", "Material Expediente", "Aux\u00edlios e Transfer\u00eancias"];
+const NAT_VALUES   = [286733273.52, 146216859.96, 19970612.03, 11432165.38, 10580291.2, 9261724.57, 3824604.02, 3588995.3, 2983568.19, 2674042.31, 2465539.87, 1664215.43, 737712.03, 560000.0, 501438.28, 9159.0];
+const ACAO_LABELS  = ["2551 - REMUNER DE SERVIDORES ATIVOS E ENCARGOS", "2615 - MANUT DAS ACOES SUS EM HOSP FILANTROPICO", "2613 - APOIO E FORTALECIMENTO DA REDE DE URGENC", "2608 - GESTAO  DAS ACOES DA ATENCAO BASICA", "2610 - GESTAO DO SERV DE ATENDIMENTO SAMU", "2616 - MANUT DOS SER  VIGILANCIA EPIDEMIOLOGICA", "2614 - APOIO E FORTALECIMENTO DA ASSISTENCIA AM", "2612 - PROMOCAO DA ASSISTENCIA ESPECIALIZADA", "2607 - MANUTENCAO DE ACOES DA ASSISTENCIA FARMA", "2552 - PROVENTOS DE INATIVOS E PENSIONISTAS", "2553 - GESTAO DO ORGAO", "1553 - CONSTRUIR E EQUIPAR  UNIDADES DE SAUDE", "1555 - CONSTRUCAO E AMPL DE UNIDADES DE SAUDE", "2611 - APOIO AS ACOES DO CONSORCIO", "2550 - REMUNERACAO DE AGENTES POLITICOS", "2617 - MANUT DAS ACOES SERV  VIGILAN SANITARIA", "2747 - GESTAO DAS ACOES DE PREVENCAO AO USO DE", "1554 - CONSTRUIR E EQUIPAR UNIDADES VIGILANCIA", "2609 - APOIO AS ATIVIDADES DO CONSELHO MUNICIPA", "2734 - GEST FUNDO EMERGENCIAL  COMBATE A COVD19"];
+const ACAO_VALUES  = [266041486.27, 101930581.74, 51908027.4, 32932465.29, 22402560.95, 7823764.41, 4134680.02, 3955159.67, 3701772.35, 2465539.87, 2104959.43, 1465184.98, 1027497.23, 872679.12, 240863.81, 113358.12, 42194.72, 29712.14, 11713.57, 0.0];
+const FORN_LABELS  = ["MUNICIPIO DE SETE LAGOAS", "IRMANDADE DE NOSSA SENHORA DAS GRACAS", "INSTITUTO NACIONAL DO SEGURO SOCIAL", "SERMEP SERVICOS MEDICOS S.A", "ARCOLIMP SERVICOS GERAIS LTDA", "ASSOCIACAO DE PAIS E AMIGOS DOS EXCEPCIONAIS", "BOM SABOR ALIMENTACAO LTDA", "CONSORCIO INTERMUNICIPAL DE SAUDE DA MICROREGIAO DE SET", "CONSORCIO INTERMUNICIPAL DE SAUDE E DE POLITICAS DE DES", "PUBLITECH SOFTWARES LTDA", "CONSORCIO INTERMUNICIPAL ALIANCA PARA A SAUDE CIAS", "ATMOSFERA GESTAO E HIGIENIZACAO DE TEXTEIS S.A.", "CEMIG DISTRIBUICAO S.A", "CRISTALIA PRODUTOS QUIMICOS FARMACEUTICOS LTDA", "MG MEDICAL COMERCIO E IMPORTACAO LTDA", "MAXIMILIANO MIRANDA DE SIQUEIRA", "AMGS COMERCIO E REPRESENTACOES LTDA", "WHITE MARTINS GASES INDUSTRIAIS DO NORDESTE LTDA.", "HDL LOGISTICA HOSPITALAR LTDA.", "SERVICO AUTONOMO DE AGUA, ESGOTO E SANEAMENTO URBANO"];
+const FORN_VALUES  = [292333301.35, 108288876.61, 36349520.38, 6698335.97, 6568816.84, 4820957.95, 4373634.72, 3000944.81, 2974668.81, 2143122.41, 2051800.0, 1771659.17, 1736050.07, 1628056.31, 1617391.2, 1411609.14, 1244768.06, 1043270.7, 1014277.5, 1011956.88];
+const CAT_LABELS   = ["Pessoal", "Servi\u00e7os terceirizados", "Material hospitalar", "Investimentos", "Medicamentos", "Previd\u00eancia", "TI", "Alimenta\u00e7\u00e3o", "Manuten\u00e7\u00e3o", "Limpeza", "Transfer\u00eancias", "Transporte", "Material expediente/pedag\u00f3gico", "Outros"];
+const CAT_VALUES   = [305343275.25, 213274921.16, 25188419.06, 14619244.51, 11966069.23, 6593209.34, 5877426.22, 4749050.01, 2555327.48, 1988431.21, 1834248.42, 1294479.09, 770425.76, 540982.77];
+const SERIE_LABELS = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
+const SERIE_VALUES = [26224043.57, 33168571.63, 37060616.73, 39476560.14, 38482079.87, 43687266.56, 45659919.98, 41057601.98, 45409628.83, 45986215.2, 40785825.17, 66205871.43];
+const SERIE_MEDIA  = 41933683.424166664;
+const FONTE_LABELS = ["Recursos Pr\u00f3prios", "Transfer\u00eancias SUS", "ASSIST\u00caNCIA FINANCEIRA DA UNI\u00c3O DESTINAD", "Transfer\u00eancias Federais", "OUTROS RECURSOS N\u00c3O VINCULADOS", "OUTROS RECURSOS VINCULADOS", "RECURSOS DE ALIENA\u00c7\u00c3O DE BENS/ATIVOS - A"];
+const FONTE_VALUES = [237403349.8, 228918638.51, 28952569.36, 7797201.98, 69554.72, 62886.72, 0.0];
+const PARETO_LABELS= ["MUNICIPIO DE SETE LAGOAS", "IRMANDADE DE NOSSA SENHORA DAS", "INSTITUTO NACIONAL DO SEGURO S", "SERMEP SERVICOS MEDICOS S.A", "ARCOLIMP SERVICOS GERAIS LTDA", "ASSOCIACAO DE PAIS E AMIGOS DO", "BOM SABOR ALIMENTACAO LTDA", "CONSORCIO INTERMUNICIPAL DE SA", "CONSORCIO INTERMUNICIPAL DE SA", "PUBLITECH SOFTWARES LTDA", "CONSORCIO INTERMUNICIPAL ALIAN", "ATMOSFERA GESTAO E HIGIENIZACA", "CEMIG DISTRIBUICAO S.A", "CRISTALIA PRODUTOS QUIMICOS FA", "MG MEDICAL COMERCIO E IMPORTAC", "MAXIMILIANO MIRANDA DE SIQUEIR", "AMGS COMERCIO E REPRESENTACOES", "WHITE MARTINS GASES INDUSTRIAI", "HDL LOGISTICA HOSPITALAR LTDA.", "SERVICO AUTONOMO DE AGUA, ESGO"];
+const PARETO_VALUES= [55.63, 76.24, 83.16, 84.43, 85.68, 86.6, 87.43, 88.0, 88.57, 88.98, 89.37, 89.71, 90.04, 90.35, 90.66, 90.93, 91.17, 91.37, 91.56, 91.75];
+const KPI_TOTAL    = 503204201.09000003;
+
+// ---- CHARTS ----
+
+// 1. Programas — bar horizontal
+new Chart(document.getElementById('chartProg'), {
+    type: 'bar',
+    data: {
+        labels: PROG_LABELS,
+        datasets: [{ data: PROG_VALUES, backgroundColor: CORES.principal,
+                     borderRadius: 4, barPercentage: 0.7 }]
+    },
+    options: {
+        indexAxis: 'y',
+        plugins: {
+            legend: { display: false },
+            tooltip: { callbacks: { label: ctx => formatBRL(ctx.raw) } }
+        },
+        scales: {
+            x: { ticks: { callback: v => formatM(v) }, grid: { display: false } },
+            y: { grid: { display: false }, ticks: { font: { size: 11 } } }
+        }
+    }
+});
+
+// 2. Natureza — doughnut
+new Chart(document.getElementById('chartNat'), {
+    type: 'doughnut',
+    data: {
+        labels: NAT_LABELS,
+        datasets: [{ data: NAT_VALUES, backgroundColor: CORES.palette,
+                     borderWidth: 2, borderColor: '#fff' }]
+    },
+    options: {
+        cutout: '58%',
+        plugins: {
+            legend: { position: 'right', labels: { font: { size: 11 } } },
+            tooltip: { callbacks: { label: ctx => {
+                const tot = ctx.dataset.data.reduce((a,b)=>a+b,0);
+                return ctx.label + ': ' + formatBRL(ctx.raw) + ' (' + (ctx.raw/tot*100).toFixed(1) + '%)';
+            }}}
+        }
+    }
+});
+
+// 3. Ações — bar horizontal
+new Chart(document.getElementById('chartAcoes'), {
+    type: 'bar',
+    data: {
+        labels: ACAO_LABELS,
+        datasets: [{ data: ACAO_VALUES,
+                     backgroundColor: ACAO_VALUES.map((v,i) => i===0 ? CORES.vermelho : CORES.principal),
+                     borderRadius: 4, barPercentage: 0.65 }]
+    },
+    options: {
+        indexAxis: 'y',
+        plugins: {
+            legend: { display: false },
+            tooltip: { callbacks: { label: ctx => formatBRL(ctx.raw) + ' (' + (ctx.raw/KPI_TOTAL*100).toFixed(1) + '%)' } }
+        },
+        scales: {
+            x: { ticks: { callback: v => formatM(v) }, grid: { display: false } },
+            y: { grid: { display: false }, ticks: { font: { size: 10 } } }
+        }
+    }
+});
+
+// 4. Fornecedores — bar horizontal
+new Chart(document.getElementById('chartForn'), {
+    type: 'bar',
+    data: {
+        labels: FORN_LABELS,
+        datasets: [{ data: FORN_VALUES,
+                     backgroundColor: FORN_VALUES.map((v,i) => i < 3 ? CORES.vermelho : CORES.principal),
+                     borderRadius: 4, barPercentage: 0.65 }]
+    },
+    options: {
+        indexAxis: 'y',
+        plugins: {
+            legend: { display: false },
+            tooltip: { callbacks: { label: ctx => formatBRL(ctx.raw) } }
+        },
+        scales: {
+            x: { ticks: { callback: v => formatM(v) }, grid: { display: false } },
+            y: { grid: { display: false }, ticks: { font: { size: 10 } } }
+        }
+    }
+});
+
+// 5. Pareto — linha de % acumulado
+new Chart(document.getElementById('chartPareto'), {
+    type: 'line',
+    data: {
+        labels: PARETO_LABELS,
+        datasets: [{
+            label: '% Acumulado',
+            data: PARETO_VALUES,
+            borderColor: CORES.vermelho,
+            backgroundColor: CORES.vermelho + '20',
+            tension: 0.2, fill: true, pointRadius: 4
+        }]
+    },
+    options: {
+        plugins: {
+            legend: { display: true },
+            tooltip: { callbacks: { label: ctx => ctx.raw.toFixed(1) + '%' } }
+        },
+        scales: {
+            x: { grid: { display: false }, ticks: { font: { size: 9 }, maxRotation: 45 } },
+            y: { min: 0, max: 100, ticks: { callback: v => v + '%' } }
+        }
+    }
+});
+
+// 6. Categorias — doughnut
+new Chart(document.getElementById('chartCat'), {
+    type: 'doughnut',
+    data: {
+        labels: CAT_LABELS,
+        datasets: [{ data: CAT_VALUES, backgroundColor: CORES.palette,
+                     borderWidth: 2, borderColor: '#fff' }]
+    },
+    options: {
+        cutout: '55%',
+        plugins: {
+            legend: { position: 'right', labels: { font: { size: 11 } } },
+            tooltip: { callbacks: { label: ctx => {
+                const tot = ctx.dataset.data.reduce((a,b)=>a+b,0);
+                return ctx.label + ': ' + formatBRL(ctx.raw) + ' (' + (ctx.raw/tot*100).toFixed(1) + '%)';
+            }}}
+        }
+    }
+});
+
+// 7. Evolução mensal — line + média
+new Chart(document.getElementById('chartMensal'), {
+    type: 'line',
+    data: {
+        labels: SERIE_LABELS,
+        datasets: [
+            {
+                label: 'Valor Pago',
+                data: SERIE_VALUES,
+                borderColor: CORES.principal,
+                backgroundColor: CORES.principal + '25',
+                tension: 0.3, fill: true, pointRadius: 5,
+                pointBackgroundColor: SERIE_VALUES.map(v => v === Math.max(...SERIE_VALUES) ? CORES.vermelho : CORES.principal),
+                pointRadius: SERIE_VALUES.map(v => v === Math.max(...SERIE_VALUES) ? 8 : 5)
+            },
+            {
+                label: 'Média mensal',
+                data: SERIE_LABELS.map(() => SERIE_MEDIA),
+                borderColor: CORES.amarelo,
+                borderDash: [6, 4],
+                borderWidth: 2,
+                pointRadius: 0,
+                fill: false
+            }
+        ]
+    },
+    options: {
+        plugins: {
+            legend: { display: true },
+            tooltip: { callbacks: { label: ctx => ctx.dataset.label + ': ' + formatBRL(ctx.raw) } }
+        },
+        scales: {
+            x: { grid: { display: false } },
+            y: { ticks: { callback: v => formatM(v) } }
+        }
+    }
+});
+
+// 8. Fontes — bar horizontal
+new Chart(document.getElementById('chartFontes'), {
+    type: 'bar',
+    data: {
+        labels: FONTE_LABELS,
+        datasets: [{ data: FONTE_VALUES, backgroundColor: CORES.palette,
+                     borderRadius: 4, barPercentage: 0.65 }]
+    },
+    options: {
+        indexAxis: 'y',
+        plugins: {
+            legend: { display: false },
+            tooltip: { callbacks: { label: ctx => formatBRL(ctx.raw) } }
+        },
+        scales: {
+            x: { ticks: { callback: v => formatM(v) }, grid: { display: false } },
+            y: { grid: { display: false } }
+        }
+    }
+});
+
+</script>
+</body>
+</html>

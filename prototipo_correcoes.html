@@ -1,0 +1,579 @@
+<title>Protótipo de Correções — Cardápio Unificado</title>
+<style>
+  :root{
+    --paper:#F1F3EE; --paper-raised:#FFFFFF; --ink:#1C231E; --ink-soft:#55605A; --ink-faint:#848E86;
+    --line:#D7DCD3; --line-strong:#BFC7BA; --stamp:#2B4A73; --stamp-soft:#E3E9F1;
+    --ok:#3B7A57; --ok-soft:#E4F0E8; --warn:#93692A; --warn-soft:#F3EADA; --bad:#AF4430; --bad-soft:#F5E4DF;
+    --pend:#8B8A7E; --pend-soft:#EAE9E2;
+    --font-mono: ui-monospace, "SF Mono", "Cascadia Mono", "Segoe UI Mono", Consolas, "Liberation Mono", Menlo, monospace;
+    --font-serif: Georgia, "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Palatino, serif;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --paper:#121915; --paper-raised:#1B2420; --ink:#E7ECE6; --ink-soft:#A6B0A6; --ink-faint:#748076;
+      --line:#2C3630; --line-strong:#3A4640; --stamp:#8FB0DE; --stamp-soft:#22314A;
+      --ok:#7FC49B; --ok-soft:#1C2E23; --warn:#D9AE5E; --warn-soft:#332A18; --bad:#E58267; --bad-soft:#3A2019;
+      --pend:#97998C; --pend-soft:#232922;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper:#121915; --paper-raised:#1B2420; --ink:#E7ECE6; --ink-soft:#A6B0A6; --ink-faint:#748076;
+    --line:#2C3630; --line-strong:#3A4640; --stamp:#8FB0DE; --stamp-soft:#22314A;
+    --ok:#7FC49B; --ok-soft:#1C2E23; --warn:#D9AE5E; --warn-soft:#332A18; --bad:#E58267; --bad-soft:#3A2019;
+    --pend:#97998C; --pend-soft:#232922; color-scheme: dark;
+  }
+  :root[data-theme="light"]{
+    --paper:#F1F3EE; --paper-raised:#FFFFFF; --ink:#1C231E; --ink-soft:#55605A; --ink-faint:#848E86;
+    --line:#D7DCD3; --line-strong:#BFC7BA; --stamp:#2B4A73; --stamp-soft:#E3E9F1;
+    --ok:#3B7A57; --ok-soft:#E4F0E8; --warn:#93692A; --warn-soft:#F3EADA; --bad:#AF4430; --bad-soft:#F5E4DF;
+    --pend:#8B8A7E; --pend-soft:#EAE9E2; color-scheme: light;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{background:var(--paper); color:var(--ink); font-family:var(--font-serif); font-size:15.5px; line-height:1.55; -webkit-font-smoothing:antialiased;}
+  a{color:var(--stamp);}
+  .wrap{max-width:980px; margin:0 auto; padding:2.6rem 1.4rem 5rem;}
+
+  .masthead{border-bottom:2px solid var(--ink); padding-bottom:1.1rem; margin-bottom:.6rem; display:flex; flex-wrap:wrap; justify-content:space-between; align-items:flex-end; gap:1rem;}
+  .masthead .id-block{font-family:var(--font-mono); font-size:.72rem; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-faint);}
+  .masthead h1{font-family:var(--font-serif); font-weight:700; font-size:1.85rem; margin:.2rem 0 0; text-wrap:balance;}
+  .masthead .meta{font-family:var(--font-mono); font-size:.78rem; color:var(--ink-soft); text-align:right;}
+
+  .lede{color:var(--ink-soft); max-width:68ch; margin:1.2rem 0 2rem;}
+
+  .toc{
+    background:var(--paper-raised); border:1px solid var(--line-strong); border-radius:2px;
+    padding:.9rem 1.1rem; margin-bottom:2.4rem;
+  }
+  .toc .eyebrow{font-family:var(--font-mono); font-size:.68rem; letter-spacing:.08em; text-transform:uppercase; color:var(--stamp); display:block; margin-bottom:.5rem;}
+  .toc ol{margin:0; padding-left:1.2rem;}
+  .toc li{margin-bottom:.25rem;}
+  .toc .tipo{font-family:var(--font-mono); font-size:.68rem; color:var(--ink-faint);}
+
+  .item{background:var(--paper-raised); border:1px solid var(--line); border-left:3px solid var(--stamp); margin-bottom:2.4rem; padding:1.3rem 1.4rem;}
+  .item-head{display:flex; align-items:baseline; justify-content:space-between; gap:1rem; flex-wrap:wrap; margin-bottom:.3rem;}
+  .item-head h2{font-size:1.28rem; margin:0; font-family:var(--font-serif);}
+  .item-head .num{font-family:var(--font-mono); font-size:.72rem; color:var(--ink-faint);}
+  .tipo-tag{
+    display:inline-block; font-family:var(--font-mono); font-size:.66rem; letter-spacing:.03em; text-transform:uppercase;
+    padding:.15rem .5rem; border-radius:2px; margin-bottom:.9rem;
+  }
+  .tipo-tag.correcao{background:var(--bad-soft); color:var(--bad);}
+  .tipo-tag.escopo{background:var(--warn-soft); color:var(--warn);}
+  .tipo-tag.gap{background:var(--pend-soft); color:var(--pend);}
+  .tipo-tag.enfase{background:var(--warn-soft); color:var(--warn);}
+  .tipo-tag.remocao{background:var(--pend-soft); color:var(--ink-soft);}
+  .tipo-tag.reescrita{background:var(--stamp-soft); color:var(--stamp);}
+
+  .nota-revisor{
+    font-family:var(--font-mono); font-size:.82rem; color:var(--ink-soft);
+    background:var(--pend-soft); border-left:3px solid var(--pend); padding:.55rem .75rem; margin-bottom:1.1rem;
+  }
+  .nota-revisor .rk{display:block; font-size:.66rem; text-transform:uppercase; letter-spacing:.06em; color:var(--ink-faint); margin-bottom:.2rem;}
+
+  .achado{
+    font-size:.92rem; color:var(--ink); background:var(--stamp-soft); border-left:3px solid var(--stamp);
+    padding:.7rem .85rem; margin-bottom:1.1rem;
+  }
+  .achado .rk{font-family:var(--font-mono); font-size:.66rem; text-transform:uppercase; letter-spacing:.06em; color:var(--stamp); display:block; margin-bottom:.3rem;}
+  .achado code{font-family:var(--font-mono); font-size:.85em; background:none;}
+
+  .diff{display:grid; grid-template-columns:1fr 1fr; gap:1px; background:var(--line-strong); border:1px solid var(--line-strong); margin-bottom:1rem;}
+  .diff-col{background:var(--paper-raised); padding:.85rem .95rem;}
+  .diff-col .dk{font-family:var(--font-mono); font-size:.66rem; text-transform:uppercase; letter-spacing:.06em; display:block; margin-bottom:.5rem;}
+  .diff-col.atual .dk{color:var(--pend);}
+  .diff-col.atual{border-top:2px solid var(--pend);}
+  .diff-col.proposto .dk{color:var(--ok);}
+  .diff-col.proposto{border-top:2px solid var(--ok);}
+  .diff-col p{font-size:.88rem; margin:0 0 .6rem;}
+  .diff-col p:last-child{margin-bottom:0;}
+  .diff-col del{color:var(--bad); text-decoration:line-through; background:var(--bad-soft);}
+  .diff-col ins{color:var(--ok); text-decoration:none; background:var(--ok-soft);}
+  .diff-col .campo{font-family:var(--font-mono); font-size:.64rem; text-transform:uppercase; color:var(--ink-faint); display:block; margin-top:.7rem; margin-bottom:.15rem;}
+  .diff-col .campo:first-child{margin-top:0;}
+
+  @media (max-width:700px){
+    .diff{grid-template-columns:1fr;}
+  }
+
+  .fonte-linha{font-family:var(--font-mono); font-size:.72rem; color:var(--ink-faint); margin-top:.9rem;}
+  .fonte-linha code{color:var(--ink-soft);}
+
+  .decisao{
+    margin-top:1.1rem; font-size:.88rem; color:var(--ink-soft); padding:.6rem .8rem;
+    background:var(--paper); border:1px dashed var(--line-strong);
+  }
+  .decisao .dk{font-family:var(--font-mono); font-size:.66rem; text-transform:uppercase; letter-spacing:.06em; color:var(--ink-faint); display:block; margin-bottom:.3rem;}
+
+  .rodape-nota{
+    margin-top:2.5rem; padding:1rem 1.2rem; background:var(--paper-raised); border:1px solid var(--line-strong);
+    font-size:.88rem; color:var(--ink-soft);
+  }
+  .rodape-nota .eyebrow{font-family:var(--font-mono); font-size:.68rem; letter-spacing:.08em; text-transform:uppercase; color:var(--stamp); display:block; margin-bottom:.5rem;}
+
+  .comentario-box{
+    margin-top:1.1rem; padding:.8rem .9rem; background:var(--stamp-soft); border-left:3px solid var(--stamp);
+  }
+  .comentario-box .ck{
+    display:block; font-family:var(--font-mono); font-size:.66rem; letter-spacing:.06em; text-transform:uppercase;
+    color:var(--stamp); margin-bottom:.5rem;
+  }
+  .comentario-box textarea{
+    width:100%; min-height:3.4rem; resize:vertical; font-family:var(--font-serif); font-size:.9rem; color:var(--ink);
+    background:var(--paper-raised); border:1px solid var(--line-strong); border-radius:2px; padding:.55rem .65rem;
+  }
+  .comentario-box textarea::placeholder{color:var(--ink-faint); font-style:italic;}
+  .comentario-geral{border-left:3px solid var(--stamp);}
+
+  .foot-actions{
+    position:sticky; bottom:0; margin-top:2rem;
+    background:var(--paper-raised); border:1px solid var(--line-strong); border-radius:2px;
+    padding:.8rem 1rem; display:flex; align-items:center; justify-content:space-between; gap:1rem; flex-wrap:wrap;
+    box-shadow:0 -6px 14px -10px rgba(0,0,0,.25);
+  }
+  .foot-actions .status-note{font-family:var(--font-mono); font-size:.72rem; color:var(--ink-faint);}
+  .foot-actions .btns{display:flex; gap:.6rem;}
+  .foot-actions button{
+    font-family:var(--font-mono); font-size:.74rem; letter-spacing:.02em; text-transform:uppercase;
+    padding:.5rem .85rem; border-radius:2px; cursor:pointer;
+  }
+  .btn-primary{background:var(--stamp); color:var(--paper); border:1px solid var(--stamp);}
+  .btn-secondary{background:transparent; color:var(--ink-soft); border:1px solid var(--line-strong);}
+
+  .export-panel{
+    display:none; margin-top:1.4rem; background:var(--paper-raised);
+    border:1px solid var(--line-strong); border-radius:2px; padding:1rem 1.1rem;
+  }
+  .export-panel.open{display:block;}
+  .export-panel .eyebrow{
+    font-family:var(--font-mono); font-size:.68rem; letter-spacing:.08em; text-transform:uppercase;
+    color:var(--stamp); display:block; margin-bottom:.3rem;
+  }
+  .export-panel p{font-size:.86rem; color:var(--ink-soft); margin:.2rem 0 .8rem;}
+  .export-panel textarea{
+    width:100%; min-height:14rem; font-family:var(--font-mono); font-size:.78rem; color:var(--ink);
+    background:var(--paper); border:1px solid var(--line-strong); border-radius:2px; padding:.7rem .8rem;
+    white-space:pre; overflow:auto;
+  }
+  .export-panel .export-actions{display:flex; gap:.6rem; margin-top:.7rem; align-items:center; flex-wrap:wrap;}
+  .export-panel .copy-note{font-family:var(--font-mono); font-size:.72rem; color:var(--ok);}
+</style>
+
+<div class="wrap">
+  <div class="masthead">
+    <div>
+      <span class="id-block">custos · papel de trabalho</span>
+      <h1>Protótipo de Correções</h1>
+    </div>
+    <div class="meta">31/07/2026<br>a partir da conferência de 08:13</div>
+  </div>
+  <p class="lede">Seis itens saíram da sua conferência do cardápio unificado com nota. Para cada um: o que
+  você apontou, o que a apuração nas fontes originais encontrou, e uma proposta de texto — nada foi
+  aplicado ao <code>cardapio_unificado.html</code> ainda. Revise e diga o que aprovar, ajustar ou
+  descartar.</p>
+
+  <div class="toc">
+    <span class="eyebrow">Nesta página</span>
+    <ol>
+      <li>EDU-003 — Escopo do "contraturno" <span class="tipo">esclarecimento de escopo</span></li>
+      <li>EDU-004 — Base legal citada <span class="tipo">correção factual confirmada</span></li>
+      <li>CON-003 — Especialistas vs. atenção básica <span class="tipo">gap de dado, sem correção possível ainda</span></li>
+      <li>HOSP-002 — Valor parece subestimado <span class="tipo">ênfase, não é erro de cálculo</span></li>
+      <li>Complementar (couve-flor) <span class="tipo">remoção</span></li>
+      <li>Fechamento / Metodologia <span class="tipo">reescrita</span></li>
+    </ol>
+  </div>
+
+  <!-- ITEM 1: EDU-003 -->
+  <div class="item">
+    <div class="item-head"><h2>EDU-003 — Fim da segunda merenda do contraturno</h2><span class="num">1 / 6</span></div>
+    <span class="tipo-tag escopo">Esclarecimento de escopo</span>
+    <div class="nota-revisor"><span class="rk">Sua nota</span>"Nos dados da merenda, você usou contraturno
+    como 'projeto'? porque tem o contraturno das creches, que não vai acabar."</div>
+    <div class="achado"><span class="rk">Apuração</span>A fonte primária dos alunos
+    (<code>seed_alunos_modalidade.ts</code>) já separa 7 modalidades contábeis distintas: Fundamental
+    Matutino/Vespertino, <strong>Creche Integral</strong>, Ed. Infantil Matutino/Vespertino e
+    <strong>Projeto Matutino/Vespertino</strong>. Os 2.166 alunos usados no cálculo vêm só da coluna
+    "Projeto" — a Creche Integral é uma coluna separada e nunca entrou na conta. O dado está certo; o
+    texto do cardápio nunca deixa isso explícito no título, só na letra miúda da justificativa.</div>
+    <div class="diff">
+      <div class="diff-col atual">
+        <span class="dk">Como está hoje</span>
+        <span class="campo">Título</span>
+        <p>Fim da segunda merenda do contraturno</p>
+        <span class="campo">Proposta (resumo)</span>
+        <p>Encerrar a refeição de segundo turno servida aos alunos do contraturno recreativo, que já
+        recebem merenda no turno regular e não contam como matrícula elegível para os repasses oficiais
+        do PNAE.</p>
+      </div>
+      <div class="diff-col proposto">
+        <span class="dk">Proposto</span>
+        <span class="campo">Título</span>
+        <p>Fim da segunda merenda do contraturno recreativo <ins>(Projeto)</ins></p>
+        <span class="campo">Proposta (resumo)</span>
+        <p>Encerrar a refeição de segundo turno servida aos alunos do contraturno recreativo <ins>—
+        modalidade "Projeto Matutino/Vespertino" no cadastro de merenda —</ins>, que já recebem merenda
+        no turno regular e não contam como matrícula elegível para os repasses oficiais do PNAE.
+        <ins>Não inclui a Creche Integral, modalidade contábil separada que permanece em período
+        integral e não é alvo deste corte.</ins></p>
+      </div>
+    </div>
+    <div class="fonte-linha">Fonte: <code>merenda-escolar/apps/api/prisma/seed_alunos_modalidade.ts</code> (linhas 9-17, definição das 7 modalidades) + <code>EDU-003.html</code> (nota de validação automática)</div>
+    <div class="decisao"><span class="dk">Pendente de você</span>Aprovar a redação acima, ou preferir outra forma de nomear a modalidade "Projeto" para o leitor leigo (a Prefeitura talvez use outro nome popular para esse turno).</div>
+    <div class="comentario-box">
+      <span class="ck">Seu comentário — EDU-003</span>
+      <textarea data-comment-id="edu-003" placeholder="Aprovado / ajustar / discordo porque…"></textarea>
+    </div>
+  </div>
+
+  <!-- ITEM 2: EDU-004 -->
+  <div class="item" style="border-left-color:var(--bad)">
+    <div class="item-head"><h2>EDU-004 — Racionalização de professores PEB</h2><span class="num">2 / 6</span></div>
+    <span class="tipo-tag correcao">Correção factual confirmada</span>
+    <div class="nota-revisor"><span class="rk">Sua nota</span>"Não é essa lei. é o plano de cargos e carreiras de 2003"</div>
+    <div class="achado"><span class="rk">Apuração — você está certo, e o erro é mais grave do que parecia</span>
+    Fui ler o texto integral das duas leis. <strong>LC nº 108/2006 não trata de professores, carga
+    horária, dobra ou itinerância — em nenhum artigo.</strong> Ela só inclui seis alíneas de gratificação
+    (30% e 10%) para cargos de apoio administrativo: Técnico de Biblioteca, Técnico Orçamentário,
+    Auxiliar de Serviços Gerais, Telefonista, Almoxarife. É uma alteração pontual do artigo 36 da
+    <strong>LC nº 80/2003</strong> — essa sim é o Plano de Cargos, Carreira e Vencimentos dos
+    Profissionais do Quadro da Educação, a lei que você citou. O erro não é meu nem só da versão
+    unificada: já está nos documentos de planejamento originais
+    (<code>plano_cardapio_cortes_educacao.md</code>, <code>Estudo_Racionalizacao_Folha_Educacao...md</code>)
+    e foi herdado pelo gerador de HTML da Educação. Não encontrei, em nenhuma das duas leis, o artigo
+    específico que autorizaria "docente itinerante" ou "extensão de carga horária (dobra)" — isso
+    continua em aberto.</div>
+    <div class="diff">
+      <div class="diff-col atual">
+        <span class="dk">Como está hoje</span>
+        <span class="campo">Título da frente</span>
+        <p>Racionalização de professores PEB pela <del>LC nº 108/2006</del></p>
+        <span class="campo">Risco mitigado (trecho)</span>
+        <p>"Resistência sindical/jurídica à mudança de regime de lotação — mitigado por
+        <del>respaldo formal na LC nº 108/2006</del>."</p>
+      </div>
+      <div class="diff-col proposto">
+        <span class="dk">Proposto</span>
+        <span class="campo">Título da frente</span>
+        <p>Racionalização de professores PEB <ins>pelo regime da LC nº 80/2003 (pendente de confirmar o dispositivo exato)</ins></p>
+        <span class="campo">Risco mitigado (trecho)</span>
+        <p>"Resistência sindical/jurídica à mudança de regime de lotação — <ins>a base legal específica
+        (dobra de carga horária / itinerância) ainda não foi identificada dentro da LC nº 80/2003 e
+        precisa de confirmação jurídica formal antes de comunicar a mudança aos professores.</ins>"</p>
+      </div>
+    </div>
+    <div class="fonte-linha">Fonte: texto integral de <code>lc_108_06.txt</code> e <code>lc_80_03.txt</code> (<code>Educação/Dados/folha/auditoria-folha-sete-lagoas/legislacao_full/</code>)</div>
+    <div class="decisao"><span class="dk">Pendente de você</span>Esta correção remove uma alegação de
+    "respaldo formal" que hoje é falsa. Recomendo tratar como bloqueante: não dá pra manter o número
+    (piso R$ 2.369.131,48 / teto R$ 2.460.121,33) com o mesmo selo "Respaldo forte" enquanto a base legal
+    real não for confirmada — sugiro rebaixar o selo até alguém da Sophos confirmar o dispositivo exato
+    na LC nº 80/2003 ou achar a lei certa. Você tem acesso a quem confirme isso na Secretaria de
+    Educação?</div>
+    <div class="comentario-box">
+      <span class="ck">Seu comentário — EDU-004</span>
+      <textarea data-comment-id="edu-004" placeholder="Aprovado / ajustar / discordo porque…"></textarea>
+    </div>
+  </div>
+
+  <!-- ITEM 3: CON-003 -->
+  <div class="item" style="border-left-color:var(--pend)">
+    <div class="item-head"><h2>CON-003 — Relicitação da atenção básica (SERMEP)</h2><span class="num">3 / 6</span></div>
+    <span class="tipo-tag gap">Gap de dado — sem correção de texto possível ainda</span>
+    <div class="nota-revisor"><span class="rk">Sua nota</span>"Detalhar mais. Atenção básica parece que não
+    tem muito o que fazer - é necessário. A questão são os especialistas (as horas deles são realmente
+    necessárias, o preço hora está ok?"</div>
+    <div class="achado"><span class="rk">Apuração</span>Procurei "especialista" em todas as fontes citadas
+    por CON-003 (<code>I1_fontes.md</code>, <code>03_memoria_calculo_CON-003.md</code>,
+    <code>RELATORIO_ANALISE_CONTRATUAL_SMS_SL_v2_2026.md</code>) — zero ocorrências. A frente inteira é
+    sobre o contrato 114/2022 como um bloco só (R$ 6,2M/ano de ESF), com um único benchmark de mercado
+    agregado (R$/equipe-mês ESF, mediana R$ 4.700). Não existe, nas fontes atuais do saude7l, nenhuma
+    quebra entre "equipe de atenção básica" e "hora de especialista" dentro desse contrato ou de
+    qualquer outro material consultado para CON-003. Sua pergunta é legítima e não tem resposta nos
+    dados que a Saúde já processou — precisaria de uma investigação nova, não de uma reescrita.</div>
+    <div class="decisao"><span class="dk">Proposta</span>Não reescrever CON-003 agora — isso inventaria
+    uma resposta que os dados não sustentam. Duas opções: (a) acrescentar ao cardápio uma pendência
+    explícita nova, nos moldes das que já existem: <em>"Verificar se o contrato SERMEP inclui
+    componente de especialistas remunerado separadamente da equipe de atenção básica, e se o preço/hora
+    desse componente está de acordo com o mercado — não avaliado nesta rodada."</em>; (b) levar essa
+    pergunta de volta ao projeto saude7l para uma investigação nova antes do próximo cardápio. Posso
+    fazer (a) agora se topar — é uma frase, não muda nenhum número.</div>
+    <div class="comentario-box">
+      <span class="ck">Seu comentário — CON-003</span>
+      <textarea data-comment-id="con-003" placeholder="Aprovado / ajustar / discordo porque…"></textarea>
+    </div>
+  </div>
+
+  <!-- ITEM 4: HOSP-002 -->
+  <div class="item" style="border-left-color:var(--warn)">
+    <div class="item-head"><h2>HOSP-002 — Protocolo de parto adequado no HNSG</h2><span class="num">4 / 6</span></div>
+    <span class="tipo-tag enfase">Ênfase — o número está certo, o aviso está enterrado</span>
+    <div class="nota-revisor"><span class="rk">Sua nota</span>"Pô, só isso, não é possível. Precisa ver
+    quantas AIH de internação obstétrica teve. isso tá muito pouco."</div>
+    <div class="achado"><span class="rk">Apuração</span>2.585 já É o total de AIH obstétricas do HNSG em
+    2024 (1.099 cesáreas + 1.486 partos normais, direto dos microdados do SUS, CNES 2206528) — não é um
+    recorte parcial, é a base inteira do ano fechado. O número parece baixo pelo motivo que a própria
+    fonte já confessa, só que enterrado dentro de "Riscos a monitorar" no <code>&lt;details&gt;</code>
+    recolhido: o cálculo usa <strong>só a diferença de repasse do SUS</strong> por parto (R$ 923,33 vs
+    R$ 588,44 = R$ 334,89) — não inclui centro cirúrgico, anestesia, nem eventual UTI neonatal, que são
+    onde o custo real de uma cesárea evitável pesa mais. A ressalva já existe e está correta; ela só não
+    aparece perto do número principal, então quem lê rápido não vê por que o valor é pequeno.</div>
+    <div class="diff">
+      <div class="diff-col atual">
+        <span class="dk">Como está hoje</span>
+        <p>A faixa (piso R$0 / central R$78.000 / teto R$238.000) aparece primeiro. A ressalva
+        "não captura custo operacional completo" só aparece dentro de "Riscos a monitorar",
+        dentro do <code>&lt;details&gt;</code> recolhido — três níveis abaixo do número.</p>
+      </div>
+      <div class="diff-col proposto">
+        <span class="dk">Proposto</span>
+        <p><ins>Adicionar uma linha logo abaixo da faixa piso/central/teto, no mesmo nível do aviso
+        "piso é escolha de honestidade metodológica" que já existe ali:</ins></p>
+        <p>"<ins>Estes valores capturam só a diferença de repasse do SUS por parto — não incluem centro
+        cirúrgico, anestesia nem eventual UTI neonatal, que costumam pesar mais no custo real de uma
+        cesárea evitável. O número tende a subestimar, não a superestimar, a economia potencial.</ins>"</p>
+      </div>
+    </div>
+    <div class="fonte-linha">Fonte: <code>HOSP-002.html</code>, seção "Riscos a monitorar" (já existente, só não está em posição de destaque)</div>
+    <div class="decisao"><span class="dk">Pendente de você</span>Isso não muda nenhum número, só move um
+    aviso que já existe para um lugar mais visível. Se preferir, também dá pra virar uma pendência nova
+    pedindo o custo operacional completo (centro cirúrgico/anestesia/UTI) antes do próximo ciclo.</div>
+    <div class="comentario-box">
+      <span class="ck">Seu comentário — HOSP-002</span>
+      <textarea data-comment-id="hosp-002" placeholder="Aprovado / ajustar / discordo porque…"></textarea>
+    </div>
+  </div>
+
+  <!-- ITEM 5: Complementar -->
+  <div class="item" style="border-left-color:var(--ink-faint)">
+    <div class="item-head"><h2>Achado complementar — couve-flor (004/2026)</h2><span class="num">5 / 6</span></div>
+    <span class="tipo-tag remocao">Remoção</span>
+    <div class="nota-revisor"><span class="rk">Sua nota</span>"pode dropar isso do cardápio"</div>
+    <div class="decisao"><span class="dk">Ação proposta</span>Remover a seção inteira "Achado complementar
+    — comparação item a item" de <code>cardapio_unificado.html</code> e da variante artifact — o bloco
+    entre <code>&lt;div class="secao-title"&gt;Achado complementar…</code> e o fechamento do
+    <code>&lt;article id="CTR-ITENS"&gt;</code>, e a entrada correspondente no sumário
+    (<code>#CTR-ITENS</code>). Também removo do índice de itens verificados no
+    <code>PLANO_ITENS_MULTIPLOS.md</code> a nota de que o achado foi "propagado ao cardápio" — vai passar
+    a dizer que ficou só no deck de contratos, não no cardápio do cliente.</div>
+    <div class="decisao"><span class="dk">Pendente de você</span>Confirma que é só tirar do cardápio do
+    cliente (o achado continua existindo no deck interno <code>apresentacao_contratos_ativos_robustos.html</code> de <code>dashboard-contratos</code>), ou quer que eu invalide o achado como um todo?</div>
+    <div class="comentario-box">
+      <span class="ck">Seu comentário — Complementar (couve-flor)</span>
+      <textarea data-comment-id="complementar" placeholder="Aprovado / ajustar / discordo porque…"></textarea>
+    </div>
+  </div>
+
+  <!-- ITEM 6: Fechamento -->
+  <div class="item" style="border-left-color:var(--stamp)">
+    <div class="item-head"><h2>Fechamento / Metodologia</h2><span class="num">6 / 6</span></div>
+    <span class="tipo-tag reescrita">Reescrita</span>
+    <div class="nota-revisor"><span class="rk">Sua nota</span>"Não gostei desse texto. Dizer só como foi
+    feito, quais dados foram utilizados, etc."</div>
+    <div class="achado"><span class="rk">Leitura do pedido</span>O texto atual mistura método (os 5
+    princípios de descarte) com uma moldura editorial (título "A maioria não resiste ao escrutínio, e é
+    assim que deve ser", abertura em tom de tese). A proposta abaixo mantém os 5 princípios — são
+    metodologicamente corretos e já vêm sendo conferidos — só troca o título e a abertura por uma
+    descrição direta do pipeline e dos dados de fato usados (SICOM, API de itens do PNCP, classificação
+    por LLM), sem a moldura de "veredito sobre a maioria".</div>
+    <div class="diff">
+      <div class="diff-col atual">
+        <span class="dk">Como está hoje</span>
+        <span class="campo">Eyebrow + título</span>
+        <p>Fechamento · Como os casos de contrato foram escolhidos<br>
+        <strong>A maioria não resiste ao escrutínio, e é assim que deve ser</strong></p>
+        <span class="campo">Abertura</span>
+        <p>"Dos 33 contratos ativos de alto valor com match confiável no SICOM e comparável no PNCP, 27
+        foram descartados na revisão caso a caso. A taxa de sobrevivência é de 18,2%. Cinco princípios
+        explicam os descartes e delimitam o que este documento pode e não pode afirmar."</p>
+      </div>
+      <div class="diff-col proposto">
+        <span class="dk">Proposto</span>
+        <span class="campo">Eyebrow + título</span>
+        <p>Fechamento · Método e dados desta revisão<br>
+        <strong>Como os 6 casos de contrato foram levantados</strong></p>
+        <span class="campo">Abertura</span>
+        <p>"Partiu-se de 33 contratos ativos de alto valor de Sete Lagoas com correspondência confirmada
+        no cadastro do SICOM (TCE-MG) e pelo menos um contrato comparável de outro município disponível
+        na API de compras do PNCP. Cada um dos 33 passou por revisão individual, caso a caso, cruzando o
+        objeto do contrato, o valor mensal equivalente e o comparável de mercado. Desse total, 6
+        contratos (18,2%) tinham comparável de domínio genuinamente equivalente e dado suficiente para
+        sustentar uma faixa de economia defensável; os outros 27 foram descartados pelos motivos abaixo,
+        documentados um a um."</p>
+      </div>
+    </div>
+    <p style="font-size:.88rem; color:var(--ink-soft); margin-top:.9rem">Os cinco princípios (similaridade
+    textual ≠ escopo, ata é teto não despesa, mensalizar antes de comparar, nenhum número é final, preço
+    unitário existe do lado de fora) ficam como estão — são exatamente "como foi feito". Só ganhariam,
+    se você topar, uma frase inicial dizendo que a classificação de domínio comparável usou embeddings e
+    depois um LLM (Gemini) para confirmar item a item nos casos de item múltiplo, já que isso é dado
+    concreto sobre o método e hoje não aparece em lugar nenhum do fechamento.</p>
+    <div class="decisao"><span class="dk">Pendente de você</span>Aprovar o tom acima, ou está ainda
+    "editorial" demais pro seu gosto? Posso cortar mais e deixar só uma lista seca de método + dados,
+    sem nenhuma frase de transição.</div>
+    <div class="comentario-box">
+      <span class="ck">Seu comentário — Fechamento</span>
+      <textarea data-comment-id="fechamento" placeholder="Aprovado / ajustar / discordo porque…"></textarea>
+    </div>
+  </div>
+
+  <div class="item comentario-geral">
+    <div class="item-head"><h2>Comentário geral</h2></div>
+    <p style="font-size:.88rem; color:var(--ink-soft); margin:0 0 .8rem">Qualquer coisa que não se encaixe
+    em um item específico — prioridade entre os 6, algo que ficou faltando, etc.</p>
+    <div class="comentario-box">
+      <span class="ck">Seu comentário — Geral</span>
+      <textarea data-comment-id="geral" placeholder="Comentário geral sobre o protótipo…"></textarea>
+    </div>
+  </div>
+
+  <div class="foot-actions">
+    <span class="status-note" id="save-note">comentários salvos neste navegador</span>
+    <div class="btns">
+      <button class="btn-secondary" id="btn-limpar" type="button">Limpar comentários</button>
+      <button class="btn-primary" id="btn-baixar" type="button">Baixar comentários (.md)</button>
+    </div>
+  </div>
+
+  <div class="export-panel" id="export-panel">
+    <span class="eyebrow">Comentários em Markdown</span>
+    <p id="export-hint">Cole este texto na conversa com o Claude para a gente seguir a partir daqui — não
+    existe um canal automático entre este artifact e o chat.</p>
+    <textarea id="export-output" readonly></textarea>
+    <div class="export-actions">
+      <button class="btn-primary" id="btn-copy" type="button">Copiar</button>
+      <span class="copy-note" id="copy-note"></span>
+    </div>
+  </div>
+
+  <div class="rodape-nota">
+    <span class="eyebrow">Próximo passo</span>
+    Nenhuma dessas seis mudanças foi aplicada ao <code>cardapio_unificado.html</code> ainda. Me diga o que
+    aprova como está, o que quer ajustar, e o que prefere descartar — aplico tudo de uma vez depois,
+    inclusive na variante artifact e na URL publicada.
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  var STORAGE_KEY = "prototipo-correcoes-comentarios-v1";
+
+  var ITENS = [
+    ["edu-003", "EDU-003 — Fim da segunda merenda do contraturno"],
+    ["edu-004", "EDU-004 — Racionalização de professores PEB"],
+    ["con-003", "CON-003 — Relicitação da atenção básica (SERMEP)"],
+    ["hosp-002", "HOSP-002 — Protocolo de parto adequado no HNSG"],
+    ["complementar", "Achado complementar — couve-flor (004/2026)"],
+    ["fechamento", "Fechamento / Metodologia"],
+    ["geral", "Comentário geral"]
+  ];
+
+  var state = {};
+  try{
+    var raw = localStorage.getItem(STORAGE_KEY);
+    if(raw) state = JSON.parse(raw);
+  }catch(e){ state = {}; }
+
+  function saveState(){
+    try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }catch(e){}
+    var note = document.getElementById("save-note");
+    note.textContent = "salvo às " + new Date().toLocaleTimeString("pt-BR");
+  }
+
+  Array.prototype.forEach.call(document.querySelectorAll("textarea[data-comment-id]"), function(ta){
+    var id = ta.getAttribute("data-comment-id");
+    if(state[id]) ta.value = state[id];
+    ta.addEventListener("input", function(){
+      state[id] = ta.value;
+      saveState();
+    });
+  });
+
+  function buildMarkdown(){
+    var lines = [];
+    lines.push("# Comentários — Protótipo de Correções (Cardápio Unificado)");
+    lines.push("");
+    lines.push("Exportado em " + new Date().toLocaleString("pt-BR") + ".");
+    lines.push("");
+    var algum = false;
+    ITENS.forEach(function(item){
+      var id = item[0], titulo = item[1];
+      var texto = (state[id] || "").trim();
+      if(!texto) return;
+      algum = true;
+      lines.push("## " + titulo);
+      lines.push("");
+      lines.push(texto);
+      lines.push("");
+    });
+    if(!algum){
+      lines.push("_(nenhum comentário preenchido ainda)_");
+    }
+    return lines.join("\n");
+  }
+
+  function mostrarPainel(texto){
+    var panel = document.getElementById("export-panel");
+    var output = document.getElementById("export-output");
+    output.value = texto;
+    panel.classList.add("open");
+    panel.scrollIntoView({behavior:"smooth", block:"start"});
+    output.focus();
+    output.select();
+  }
+
+  document.getElementById("btn-limpar").addEventListener("click", function(){
+    if(!confirm("Limpar todos os comentários salvos neste navegador?")) return;
+    state = {};
+    saveState();
+    Array.prototype.forEach.call(document.querySelectorAll("textarea[data-comment-id]"), function(ta){
+      ta.value = "";
+    });
+  });
+
+  document.getElementById("btn-baixar").addEventListener("click", function(){
+    var texto = buildMarkdown();
+    var hint = document.getElementById("export-hint");
+
+    if(window.claude && window.claude.downloads){
+      window.claude.downloads.save({
+        filename: "comentarios-prototipo-correcoes-" + new Date().toISOString().slice(0,10) + ".md",
+        data: texto
+      }).then(function(){
+        hint.textContent = "Arquivo salvo. Você também pode colar o texto abaixo direto na conversa, se preferir.";
+        mostrarPainel(texto);
+      }, function(err){
+        var code = err && err.code;
+        if(code === "declined"){
+          hint.textContent = "Download recusado. Copie o texto abaixo e cole na conversa.";
+        }else{
+          hint.textContent = "Não deu para salvar o arquivo (" + (code || "erro desconhecido") + "). Copie o texto abaixo e cole na conversa.";
+        }
+        mostrarPainel(texto);
+      });
+    }else{
+      hint.textContent = "Download automático não disponível aqui. Copie o texto abaixo e cole na conversa.";
+      mostrarPainel(texto);
+    }
+  });
+
+  document.getElementById("btn-copy").addEventListener("click", function(){
+    var output = document.getElementById("export-output");
+    var note = document.getElementById("copy-note");
+    output.focus();
+    output.select();
+    function ok(){ note.textContent = "copiado ✓"; setTimeout(function(){ note.textContent = ""; }, 2500); }
+    function fail(){ note.textContent = "não deu pra copiar automaticamente — o texto já está selecionado, use Ctrl+C"; }
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(output.value).then(ok, function(){
+        try{ document.execCommand("copy"); ok(); }catch(e){ fail(); }
+      });
+    }else{
+      try{ document.execCommand("copy"); ok(); }catch(e){ fail(); }
+    }
+  });
+})();
+</script>

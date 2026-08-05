@@ -1,0 +1,417 @@
+{
+ "kpis_mes": [
+  {
+   "mes": 3,
+   "competencia": "mar/2026",
+   "n_servidores": 8904,
+   "folha_total": 49598171.26,
+   "medio": 5570.32,
+   "mediana": 4150.95,
+   "gini": 0.3925,
+   "elite_n": 221,
+   "elite_total": 6449110.79,
+   "elite_pct_folha": 13.0,
+   "cobertura_cadastro_pct": 99.99
+  },
+  {
+   "mes": 4,
+   "competencia": "abr/2026",
+   "n_servidores": 8887,
+   "folha_total": 49564704.96,
+   "medio": 5577.21,
+   "mediana": 4108.4,
+   "gini": 0.3874,
+   "elite_n": 232,
+   "elite_total": 6685681.09,
+   "elite_pct_folha": 13.49,
+   "cobertura_cadastro_pct": 98.29
+  },
+  {
+   "mes": 5,
+   "competencia": "mai/2026",
+   "n_servidores": 8863,
+   "folha_total": 49217492.86,
+   "medio": 5553.14,
+   "mediana": 4108.4,
+   "gini": 0.3864,
+   "elite_n": 230,
+   "elite_total": 6582610.84,
+   "elite_pct_folha": 13.37,
+   "cobertura_cadastro_pct": 96.66
+  }
+ ],
+ "cobertura_secretaria_pct": 98.25,
+ "por_vinculo": [
+  {
+   "vinculo": "Estatutário Ativo",
+   "n": 3266,
+   "total": 20756569.62,
+   "pct_folha": 42.17
+  },
+  {
+   "vinculo": "Contrato Temporário",
+   "n": 4014,
+   "total": 19564070.42,
+   "pct_folha": 39.75
+  },
+  {
+   "vinculo": "Estatutário+Comissionado",
+   "n": 312,
+   "total": 3278599.23,
+   "pct_folha": 6.66
+  },
+  {
+   "vinculo": "Inativo",
+   "n": 407,
+   "total": 2112696.89,
+   "pct_folha": 4.29
+  },
+  {
+   "vinculo": "Cargo em Comissão",
+   "n": 312,
+   "total": 2005844.26,
+   "pct_folha": 4.08
+  },
+  {
+   "vinculo": "SEM_CADASTRO",
+   "n": 296,
+   "total": 860105.17,
+   "pct_folha": 1.75
+  },
+  {
+   "vinculo": "Pensionista",
+   "n": 158,
+   "total": 490843.14,
+   "pct_folha": 1.0
+  },
+  {
+   "vinculo": "Estagiário",
+   "n": 89,
+   "total": 84821.54,
+   "pct_folha": 0.17
+  },
+  {
+   "vinculo": "Agente Publico Mandato Eletivo",
+   "n": 2,
+   "total": 55882.02,
+   "pct_folha": 0.11
+  },
+  {
+   "vinculo": "Junta De Recurso Fiscal",
+   "n": 6,
+   "total": 4308.78,
+   "pct_folha": 0.01
+  },
+  {
+   "vinculo": "72",
+   "n": 1,
+   "total": 3751.79,
+   "pct_folha": 0.01
+  }
+ ],
+ "por_secretaria": [
+  {
+   "secretaria": "Saúde",
+   "n": 2898,
+   "total": 19531155.53,
+   "pct_folha": 39.68
+  },
+  {
+   "secretaria": "Educação",
+   "n": 3644,
+   "total": 15376373.62,
+   "pct_folha": 31.24
+  },
+  {
+   "secretaria": "Administração/Gestão",
+   "n": 745,
+   "total": 6335248.42,
+   "pct_folha": 12.87
+  },
+  {
+   "secretaria": "Inativos/Pensionistas",
+   "n": 565,
+   "total": 2603540.03,
+   "pct_folha": 5.29
+  },
+  {
+   "secretaria": "Obras/Serviços Urbanos",
+   "n": 251,
+   "total": 1877673.54,
+   "pct_folha": 3.82
+  },
+  {
+   "secretaria": "Meio Ambiente/Agricultura/Desenvolvimento",
+   "n": 93,
+   "total": 925310.62,
+   "pct_folha": 1.88
+  },
+  {
+   "secretaria": "SEM_CADASTRO",
+   "n": 296,
+   "total": 860105.17,
+   "pct_folha": 1.75
+  },
+  {
+   "secretaria": "Assistência Social",
+   "n": 231,
+   "total": 831423.03,
+   "pct_folha": 1.69
+  },
+  {
+   "secretaria": "Segurança/Guarda/Defesa Civil",
+   "n": 79,
+   "total": 606393.38,
+   "pct_folha": 1.23
+  },
+  {
+   "secretaria": "Cultura/Esporte/Lazer/Turismo",
+   "n": 55,
+   "total": 252877.43,
+   "pct_folha": 0.51
+  },
+  {
+   "secretaria": "Outras",
+   "n": 6,
+   "total": 17392.09,
+   "pct_folha": 0.04
+  }
+ ],
+ "saude_vs_resto": [
+  {
+   "_saude": "Restante do município",
+   "n": 5965,
+   "total": 29686337.33,
+   "medio": 4976.75,
+   "pct_folha": 60.32
+  },
+  {
+   "_saude": "Saúde",
+   "n": 2898,
+   "total": 19531155.53,
+   "medio": 6739.53,
+   "pct_folha": 39.68
+  }
+ ],
+ "faixas": [
+  {
+   "faixa": "Até 2k",
+   "n": 584,
+   "pct_n": 6.59,
+   "total": 832241.56,
+   "pct_valor": 1.69
+  },
+  {
+   "faixa": "2k–3k",
+   "n": 1808,
+   "pct_n": 20.4,
+   "total": 4175266.91,
+   "pct_valor": 8.48
+  },
+  {
+   "faixa": "3k–5k",
+   "n": 3412,
+   "pct_n": 38.5,
+   "total": 13533571.93,
+   "pct_valor": 27.5
+  },
+  {
+   "faixa": "5k–8k",
+   "n": 1609,
+   "pct_n": 18.15,
+   "total": 10079803.82,
+   "pct_valor": 20.48
+  },
+  {
+   "faixa": "8k–12k",
+   "n": 809,
+   "pct_n": 9.13,
+   "total": 7652185.2,
+   "pct_valor": 15.55
+  },
+  {
+   "faixa": "12k–20k",
+   "n": 411,
+   "pct_n": 4.64,
+   "total": 6361812.6,
+   "pct_valor": 12.93
+  },
+  {
+   "faixa": "20k+",
+   "n": 230,
+   "pct_n": 2.6,
+   "total": 6582610.84,
+   "pct_valor": 13.37
+  }
+ ],
+ "rubricas_pareto": {
+  "valor_total_3m": 148380369.08,
+  "n_rubricas": 168,
+  "top5_pct": 42.66,
+  "top10_pct": 54.02,
+  "top20_pct": 69.19
+ },
+ "rubricas_top10": [
+  {
+   "descricao": "SALARIO BASE",
+   "valor_mes_medio": 7387297.8,
+   "pct": 14.94
+  },
+  {
+   "descricao": "CONTRATO",
+   "valor_mes_medio": 6630245.32,
+   "pct": 13.41
+  },
+  {
+   "descricao": "TRIENIOS",
+   "valor_mes_medio": 3971329.39,
+   "pct": 8.03
+  },
+  {
+   "descricao": "VENCIMENTO BASICO LEI FEDERAL Nº 13708",
+   "valor_mes_medio": 1678959.75,
+   "pct": 3.39
+  },
+  {
+   "descricao": "GRATIF. PLANTAO 2ª A 6ªD LC190/16",
+   "valor_mes_medio": 1430755.68,
+   "pct": 2.89
+  },
+  {
+   "descricao": "REGENCIA CLASSE",
+   "valor_mes_medio": 1198744.68,
+   "pct": 2.42
+  },
+  {
+   "descricao": "COMPLEMENTACAO PISO ENFERMAGEM",
+   "valor_mes_medio": 1144906.42,
+   "pct": 2.31
+  },
+  {
+   "descricao": "ADICIONAL 30 ANOS 20%",
+   "valor_mes_medio": 1142976.11,
+   "pct": 2.31
+  },
+  {
+   "descricao": "GRAT. SERV. OPER. ADM E TEC. LC 183/15 40%",
+   "valor_mes_medio": 1078182.95,
+   "pct": 2.18
+  },
+  {
+   "descricao": "LEI 6544/2001",
+   "valor_mes_medio": 1056466.36,
+   "pct": 2.14
+  }
+ ],
+ "composicao_tipo": [
+  {
+   "tipo": "OUTROS",
+   "valor_mes": 20446929.48,
+   "pct": 41.34
+  },
+  {
+   "tipo": "BASE",
+   "valor_mes": 11057864.06,
+   "pct": 22.36
+  },
+  {
+   "tipo": "GRATIFICACAO_ADICIONAL",
+   "valor_mes": 10089056.78,
+   "pct": 20.4
+  },
+  {
+   "tipo": "EVENTUAL_VARIAVEL",
+   "valor_mes": 4057629.95,
+   "pct": 8.2
+  },
+  {
+   "tipo": "EVENTUAL_INDENIZATORIA",
+   "valor_mes": 3461779.5,
+   "pct": 7.0
+  },
+  {
+   "tipo": "AUXILIO_COMPLEMENTO",
+   "valor_mes": 346863.25,
+   "pct": 0.7
+  }
+ ],
+ "trilha_b": {
+  "outliers_cargo_n": 476,
+  "outliers_desvio_mes": 4153062.75,
+  "folga_fronteira_mes": 37028299.32,
+  "gini": 0.377,
+  "top5pct_share": 0.2067
+ },
+ "trilha_c": {
+  "resumo_tipo": [
+   {
+    "tipo": "HORAS_ZERO_OU_AUSENTE",
+    "n": 568,
+    "valor_mes": 2609902.32
+   },
+   {
+    "tipo": "VARIACAO_BRUSCA_MAR_MAI",
+    "n": 300,
+    "valor_mes": 1340542.04
+   },
+   {
+    "tipo": "PAGO_SEM_CADASTRO",
+    "n": 296,
+    "valor_mes": 860105.17
+   }
+  ],
+  "sem_cadastro_por_mes": {
+   "3": {
+    "n": 1,
+    "valor": 1184.49
+   },
+   "4": {
+    "n": 152,
+    "valor": 371359.46
+   },
+   "5": {
+    "n": 296,
+    "valor": 860105.17
+   }
+  },
+  "fragmentacao": [
+   {
+    "familia": "GRATIFICACAO_GERAL",
+    "n_rubricas": 44,
+    "n_serv": 7687,
+    "valor_mes": 7657815.04
+   },
+   {
+    "familia": "PLANTAO",
+    "n_rubricas": 7,
+    "n_serv": 360,
+    "valor_mes": 2785275.69
+   },
+   {
+    "familia": "ADICIONAL",
+    "n_rubricas": 5,
+    "n_serv": 1791,
+    "valor_mes": 1721964.74
+   },
+   {
+    "familia": "INSALUBRIDADE",
+    "n_rubricas": 3,
+    "n_serv": 2834,
+    "valor_mes": 1078962.19
+   },
+   {
+    "familia": "FUNCAO_GRATIFICADA",
+    "n_rubricas": 6,
+    "n_serv": 196,
+    "valor_mes": 381616.87
+   },
+   {
+    "familia": "URGENCIA",
+    "n_rubricas": 2,
+    "n_serv": 28,
+    "valor_mes": 104902.13
+   }
+  ],
+  "n_variacoes_bruscas": 484
+ }
+}

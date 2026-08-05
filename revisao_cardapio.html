@@ -1,0 +1,733 @@
+<title>Conferência do Cardápio Unificado</title>
+<style>
+  :root{
+    --paper:#F1F3EE;
+    --paper-raised:#FFFFFF;
+    --ink:#1C231E;
+    --ink-soft:#55605A;
+    --ink-faint:#848E86;
+    --line:#D7DCD3;
+    --line-strong:#BFC7BA;
+    --stamp:#2B4A73;
+    --stamp-soft:#E3E9F1;
+    --ok:#3B7A57;
+    --ok-soft:#E4F0E8;
+    --warn:#93692A;
+    --warn-soft:#F3EADA;
+    --bad:#AF4430;
+    --bad-soft:#F5E4DF;
+    --pend:#8B8A7E;
+    --pend-soft:#EAE9E2;
+    --tag-edu:#4E689A;
+    --tag-sau:#A66A3E;
+    --tag-ctr:#6E7A3E;
+    --tag-fim:#6B6459;
+    --font-mono: ui-monospace, "SF Mono", "Cascadia Mono", "Segoe UI Mono", Consolas, "Liberation Mono", Menlo, monospace;
+    --font-serif: Georgia, "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Palatino, serif;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --paper:#121915;
+      --paper-raised:#1B2420;
+      --ink:#E7ECE6;
+      --ink-soft:#A6B0A6;
+      --ink-faint:#748076;
+      --line:#2C3630;
+      --line-strong:#3A4640;
+      --stamp:#8FB0DE;
+      --stamp-soft:#22314A;
+      --ok:#7FC49B;
+      --ok-soft:#1C2E23;
+      --warn:#D9AE5E;
+      --warn-soft:#332A18;
+      --bad:#E58267;
+      --bad-soft:#3A2019;
+      --pend:#97998C;
+      --pend-soft:#232922;
+      --tag-edu:#8FA9DD;
+      --tag-sau:#D89A6C;
+      --tag-ctr:#A6B36C;
+      --tag-fim:#A8A296;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper:#121915; --paper-raised:#1B2420; --ink:#E7ECE6; --ink-soft:#A6B0A6; --ink-faint:#748076;
+    --line:#2C3630; --line-strong:#3A4640; --stamp:#8FB0DE; --stamp-soft:#22314A;
+    --ok:#7FC49B; --ok-soft:#1C2E23; --warn:#D9AE5E; --warn-soft:#332A18; --bad:#E58267; --bad-soft:#3A2019;
+    --pend:#97998C; --pend-soft:#232922; --tag-edu:#8FA9DD; --tag-sau:#D89A6C; --tag-ctr:#A6B36C; --tag-fim:#A8A296;
+    color-scheme: dark;
+  }
+  :root[data-theme="light"]{
+    --paper:#F1F3EE; --paper-raised:#FFFFFF; --ink:#1C231E; --ink-soft:#55605A; --ink-faint:#848E86;
+    --line:#D7DCD3; --line-strong:#BFC7BA; --stamp:#2B4A73; --stamp-soft:#E3E9F1;
+    --ok:#3B7A57; --ok-soft:#E4F0E8; --warn:#93692A; --warn-soft:#F3EADA; --bad:#AF4430; --bad-soft:#F5E4DF;
+    --pend:#8B8A7E; --pend-soft:#EAE9E2; --tag-edu:#4E689A; --tag-sau:#A66A3E; --tag-ctr:#6E7A3E; --tag-fim:#6B6459;
+    color-scheme: light;
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:var(--font-serif);
+    font-size:15.5px;
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:var(--stamp);}
+  a:focus-visible, button:focus-visible, summary:focus-visible, textarea:focus-visible{
+    outline:2px solid var(--stamp); outline-offset:2px;
+  }
+  .wrap{max-width:920px; margin:0 auto; padding:2.6rem 1.4rem 6rem;}
+
+  .masthead{
+    border-bottom:2px solid var(--ink);
+    padding-bottom:1.1rem;
+    margin-bottom:1.6rem;
+    display:flex; flex-wrap:wrap; justify-content:space-between; align-items:flex-end; gap:1rem;
+  }
+  .masthead .id-block{font-family:var(--font-mono); font-size:.72rem; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-faint);}
+  .masthead h1{
+    font-family:var(--font-serif); font-weight:700; font-size:1.9rem; margin:.2rem 0 0; text-wrap:balance;
+  }
+  .masthead .protocolo-num{font-family:var(--font-mono); font-size:.78rem; color:var(--ink-soft); text-align:right;}
+
+  .lede{color:var(--ink-soft); max-width:62ch; margin:0 0 1.6rem;}
+  .lede a{white-space:nowrap;}
+
+  .protocolo{
+    background:var(--paper-raised);
+    border:1px solid var(--line-strong);
+    border-radius:2px;
+    padding:1.1rem 1.3rem;
+    margin-bottom:1.8rem;
+  }
+  .protocolo .eyebrow{
+    font-family:var(--font-mono); font-size:.68rem; letter-spacing:.1em; text-transform:uppercase;
+    color:var(--stamp); display:block; margin-bottom:.55rem;
+  }
+  .protocolo ul{margin:0; padding-left:1.15rem;}
+  .protocolo li{margin-bottom:.4rem;}
+  .protocolo li:last-child{margin-bottom:0;}
+  .protocolo strong{color:var(--ink);}
+
+  .progress-bar{
+    display:grid; grid-template-columns:repeat(4,1fr); gap:1px;
+    background:var(--line-strong);
+    border:1px solid var(--line-strong);
+    margin-bottom:2rem;
+  }
+  .progress-cell{
+    background:var(--paper-raised); padding:.7rem .8rem; text-align:center;
+  }
+  .progress-cell .n{font-family:var(--font-mono); font-size:1.5rem; font-variant-numeric:tabular-nums; display:block;}
+  .progress-cell .lbl{font-family:var(--font-mono); font-size:.66rem; letter-spacing:.06em; text-transform:uppercase; color:var(--ink-faint);}
+  .progress-cell.total .n{color:var(--ink);}
+  .progress-cell.pendente .n{color:var(--pend);}
+  .progress-cell.conferido .n{color:var(--ok);}
+  .progress-cell.divergencia .n{color:var(--bad);}
+
+  .bloco{margin-bottom:2.6rem;}
+  .bloco-head{
+    display:flex; align-items:baseline; justify-content:space-between; gap:1rem; flex-wrap:wrap;
+    border-bottom:1px solid var(--line-strong); padding-bottom:.5rem; margin-bottom:.2rem;
+  }
+  .bloco-head h2{font-size:1.3rem; margin:0; font-family:var(--font-serif);}
+  .bloco-fonte{
+    font-family:var(--font-mono); font-size:.72rem; color:var(--ink-faint);
+    text-align:right;
+  }
+  .bloco-fonte code{background:none; color:var(--ink-soft);}
+  .bloco-nota{
+    font-size:.86rem; color:var(--ink-soft); margin:.5rem 0 1rem; padding:.55rem .7rem;
+    background:var(--pend-soft); border-left:3px solid var(--pend);
+  }
+  .bloco-total{
+    font-family:var(--font-mono); font-size:.8rem; color:var(--ink-soft); margin:.4rem 0 1rem;
+    display:flex; gap:1.4rem; flex-wrap:wrap;
+  }
+  .bloco-total b{color:var(--ink); font-variant-numeric:tabular-nums;}
+
+  .row{
+    background:var(--paper-raised);
+    border:1px solid var(--line);
+    border-left:3px solid var(--line-strong);
+    margin-bottom:.55rem;
+  }
+  .row[data-status="conferido"]{border-left-color:var(--ok);}
+  .row[data-status="divergencia"]{border-left-color:var(--bad);}
+
+  .row summary{
+    list-style:none; cursor:pointer; padding:.85rem 1rem; display:flex; align-items:center; gap:.9rem;
+  }
+  .row summary::-webkit-details-marker{display:none;}
+  .row summary .chev{
+    font-family:var(--font-mono); color:var(--ink-faint); flex:0 0 auto; transition:transform .15s ease;
+    font-size:.8rem;
+  }
+  .row[open] summary .chev{transform:rotate(90deg);}
+  .row summary .rowid{
+    font-family:var(--font-mono); font-size:.72rem; color:var(--ink-faint); flex:0 0 auto; width:4.6rem;
+  }
+  .row summary .rowtitle{flex:1 1 auto; min-width:0;}
+  .row summary .rowtitle .t{font-weight:700; text-wrap:balance;}
+  .row summary .rowtitle .selo{
+    display:inline-block; font-family:var(--font-mono); font-size:.66rem; letter-spacing:.03em;
+    padding:.1rem .4rem; border-radius:2px; margin-left:.5rem; vertical-align:middle; white-space:nowrap;
+  }
+  .selo.ok{background:var(--ok-soft); color:var(--ok);}
+  .selo.warn{background:var(--warn-soft); color:var(--warn);}
+  .selo.bad{background:var(--bad-soft); color:var(--bad);}
+  .selo.neutral{background:var(--pend-soft); color:var(--ink-soft);}
+
+  .metricas{
+    display:flex; gap:1.1rem; flex:0 0 auto; font-family:var(--font-mono); font-size:.78rem;
+    font-variant-numeric:tabular-nums; color:var(--ink-soft);
+  }
+  .metricas .m{text-align:right;}
+  .metricas .m .lbl{display:block; font-size:.63rem; color:var(--ink-faint); text-transform:uppercase; letter-spacing:.04em;}
+  .metricas .m .val{color:var(--ink);}
+
+  .toggle-group{display:flex; flex:0 0 auto; gap:.25rem;}
+  .toggle-group button{
+    font-family:var(--font-mono); font-size:.66rem; letter-spacing:.02em; text-transform:uppercase;
+    border:1px solid var(--line-strong); background:var(--paper); color:var(--ink-soft);
+    padding:.32rem .5rem; cursor:pointer; border-radius:2px;
+  }
+  .toggle-group button[aria-pressed="true"][data-state="pendente"]{background:var(--pend-soft); color:var(--pend); border-color:var(--pend);}
+  .toggle-group button[aria-pressed="true"][data-state="conferido"]{background:var(--ok-soft); color:var(--ok); border-color:var(--ok);}
+  .toggle-group button[aria-pressed="true"][data-state="divergencia"]{background:var(--bad-soft); color:var(--bad); border-color:var(--bad);}
+
+  .row-body{padding:0 1rem 1.1rem 1rem; border-top:1px solid var(--line);}
+  .row-body .desc{margin-top:.9rem; color:var(--ink-soft); font-size:.94rem;}
+  .row-body .ressalva{
+    margin-top:.8rem; padding:.6rem .75rem; background:var(--warn-soft); border-left:3px solid var(--warn);
+    font-size:.86rem;
+  }
+  .row-body .ressalva.critica{background:var(--bad-soft); border-left-color:var(--bad);}
+  .row-body .ressalva .rk{font-family:var(--font-mono); font-size:.63rem; text-transform:uppercase; letter-spacing:.06em; display:block; margin-bottom:.25rem; color:var(--ink-faint);}
+  .row-body .linhas{
+    display:flex; flex-wrap:wrap; gap:.4rem 1.4rem; margin-top:.85rem; font-family:var(--font-mono); font-size:.74rem; color:var(--ink-faint);
+  }
+  .row-body .linhas a{color:var(--stamp);}
+  .row-body textarea{
+    width:100%; margin-top:.8rem; min-height:3.2rem; resize:vertical;
+    font-family:var(--font-serif); font-size:.9rem; color:var(--ink);
+    background:var(--paper); border:1px solid var(--line-strong); border-radius:2px; padding:.55rem .65rem;
+  }
+  .row-body textarea::placeholder{color:var(--ink-faint); font-style:italic;}
+
+  .foot-actions{
+    position:sticky; bottom:0; margin-top:2.4rem;
+    background:var(--paper-raised); border:1px solid var(--line-strong); border-radius:2px;
+    padding:.8rem 1rem; display:flex; align-items:center; justify-content:space-between; gap:1rem; flex-wrap:wrap;
+    box-shadow:0 -6px 14px -10px rgba(0,0,0,.25);
+  }
+  .foot-actions .status-note{font-family:var(--font-mono); font-size:.72rem; color:var(--ink-faint);}
+  .foot-actions .btns{display:flex; gap:.6rem;}
+  .foot-actions button{
+    font-family:var(--font-mono); font-size:.74rem; letter-spacing:.02em; text-transform:uppercase;
+    padding:.5rem .85rem; border-radius:2px; cursor:pointer;
+  }
+  .btn-primary{background:var(--stamp); color:var(--paper); border:1px solid var(--stamp);}
+  .btn-secondary{background:transparent; color:var(--ink-soft); border:1px solid var(--line-strong);}
+
+  .export-panel{
+    display:none; margin-top:2rem; background:var(--paper-raised);
+    border:1px solid var(--line-strong); border-radius:2px; padding:1rem 1.1rem;
+  }
+  .export-panel.open{display:block;}
+  .export-panel .eyebrow{
+    font-family:var(--font-mono); font-size:.68rem; letter-spacing:.08em; text-transform:uppercase;
+    color:var(--stamp); display:block; margin-bottom:.3rem;
+  }
+  .export-panel p{font-size:.86rem; color:var(--ink-soft); margin:.2rem 0 .8rem;}
+  .export-panel textarea{
+    width:100%; min-height:16rem; font-family:var(--font-mono); font-size:.78rem; color:var(--ink);
+    background:var(--paper); border:1px solid var(--line-strong); border-radius:2px; padding:.7rem .8rem;
+    white-space:pre; overflow:auto;
+  }
+  .export-panel .export-actions{display:flex; gap:.6rem; margin-top:.7rem; align-items:center; flex-wrap:wrap;}
+  .export-panel .copy-note{font-family:var(--font-mono); font-size:.72rem; color:var(--ok);}
+
+  @media (max-width:640px){
+    .row summary{flex-wrap:wrap;}
+    .metricas{width:100%; justify-content:flex-start; order:3;}
+    .toggle-group{order:2;}
+    .masthead{align-items:flex-start;}
+  }
+</style>
+
+<div class="wrap">
+
+  <div class="masthead">
+    <div>
+      <span class="id-block">custos · papel de trabalho</span>
+      <h1>Conferência do Cardápio Unificado</h1>
+    </div>
+    <div class="protocolo-num">Gerado em 31/07/2026<br>21 frentes a conferir</div>
+  </div>
+
+  <p class="lede">Layout de apoio para a revisão humana linha a linha pedida antes de qualquer envio ao
+  cliente. Não substitui a leitura — organiza o que precisa ser conferido contrato a contrato, guarda o
+  estado no seu navegador e gera um registro exportável ao final. O cardápio em si continua em
+  <a href="https://claude.ai/code/artifact/f4f85244-7425-4978-8705-532e911bd228" target="_blank" rel="noopener">claude.ai/code/artifact/f4f85244…</a>.</p>
+
+  <div class="protocolo">
+    <span class="eyebrow">Protocolo de fusão — custos/CLAUDE.md</span>
+    <ul>
+      <li><strong>Nunca somar</strong> os totais de Educação, Saúde e Contratos num número único — a
+      heterogeneidade (recorrente, devolução contábil, receita/governança, condicional) é deliberada.</li>
+      <li>Em Saúde, <strong>manter 100%</strong> riscos, pendências, veredito de auditoria e notas de
+      honestidade ("o teto nunca é promessa", "o piso é honestamente R$ 0") — nunca suavizar.</li>
+      <li><strong>Nenhum número muda</strong> na reescrita. Todo valor (R$, %, datas, nº de contrato/lei)
+      precisa bater com a fonte antes de aprovar.</li>
+      <li>Divergência conhecida e já aceita: soma dos 4 componentes de Educação dá piso/teto 1 centavo
+      diferente do total publicado pela fonte (arredondamento do gerador original) — não reportar de novo.</li>
+    </ul>
+  </div>
+
+  <div class="progress-bar" id="progress-bar">
+    <div class="progress-cell total"><span class="n" id="cnt-total">21</span><span class="lbl">Total</span></div>
+    <div class="progress-cell pendente"><span class="n" id="cnt-pendente">21</span><span class="lbl">Pendente</span></div>
+    <div class="progress-cell conferido"><span class="n" id="cnt-conferido">0</span><span class="lbl">Conferido</span></div>
+    <div class="progress-cell divergencia"><span class="n" id="cnt-divergencia">0</span><span class="lbl">Divergência</span></div>
+  </div>
+
+  <div id="blocos"></div>
+
+  <div class="export-panel" id="export-panel">
+    <span class="eyebrow">Registro em Markdown</span>
+    <p>O download automático não funciona dentro do Artifact (o iframe do visualizador bloqueia
+    downloads). Selecione o texto abaixo e copie (Ctrl+A, depois Ctrl+C) — ou clique em "Copiar".</p>
+    <textarea id="export-output" readonly></textarea>
+    <div class="export-actions">
+      <button class="btn-primary" id="btn-copy" type="button">Copiar</button>
+      <span class="copy-note" id="copy-note"></span>
+    </div>
+  </div>
+
+  <div class="foot-actions">
+    <span class="status-note" id="save-note">estado salvo neste navegador</span>
+    <div class="btns">
+      <button class="btn-secondary" id="btn-reset" type="button">Limpar registro</button>
+      <button class="btn-primary" id="btn-export" type="button">Exportar registro (.md)</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  var ARTIFACT_BASE = "https://claude.ai/code/artifact/f4f85244-7425-4978-8705-532e911bd228";
+  var STORAGE_KEY = "revisao-cardapio-unificado-v1";
+
+  var BLOCOS = [
+    {
+      id:"educacao",
+      titulo:"Educação",
+      fonte:"html_cardapio/index.html (Sophos) + modelo próprio para EDU-005",
+      total:[["Piso","R$ 4.800.409,13"],["Central","R$ 6.070.194,20"],["Teto","R$ 6.501.280,40"]],
+      nota:"O total inclui EDU-005, que não vem do cardápio de Educação publicado na origem (aquele cobre só as quatro primeiras frentes) e sim de modelo próprio. EDU-005 foi inteiramente reescrita em 04/08/2026 após parecer de auditoria independente: mudaram escopo, metodologia e as três pontas da faixa. É a frente que mais precisa de conferência nesta rodada.",
+      itens:[
+        {
+          id:"EDU-001", anchor:"EDU-001",
+          titulo:"Extinção dos contratos de oficineiros do contraturno",
+          metricas:[["Piso","R$ 1.349.611,38"],["Central","R$ 2.036.219,36"],["Teto","R$ 2.079.988,20"]],
+          desc:"Conferir se a faixa piso–central–teto e a justificativa de extinção batem com o dossiê de origem."
+        },
+        {
+          id:"EDU-002", anchor:"EDU-002",
+          titulo:"Rescisão da locação de espaço com a FUMEP",
+          metricas:[["Piso","R$ 206.602,52"],["Central","R$ 229.558,35"],["Teto","R$ 252.514,19"]],
+          desc:"Conferir valor de locação citado e a condição de rescisão (aviso prévio, multa, etc.)."
+        },
+        {
+          id:"EDU-003", anchor:"EDU-003",
+          titulo:"Fim da segunda merenda do contraturno",
+          metricas:[["Piso","R$ 705.436,00"],["Central","R$ 829.924,71"],["Teto","R$ 954.413,41"]],
+          desc:"Conferir quantitativo de refeições/alunos usado para chegar nesses valores."
+        },
+        {
+          id:"EDU-004", anchor:"EDU-004",
+          titulo:"Racionalização de professores PEB pela LC nº 108/2006",
+          metricas:[["Piso","R$ 2.369.131,48"],["Central","R$ 2.447.768,15"],["Teto","R$ 2.460.121,33"]],
+          desc:"Conferir número da lei citada (LC nº 108/2006) e o mecanismo de racionalização descrito."
+        },
+        {
+          id:"EDU-005", anchor:"EDU-005",
+          titulo:"Enxugamento do quadro administrativo do ensino fundamental por comparação entre pares",
+          metricas:[["Piso","R$ 169.627,76"],["Central","R$ 526.723,63"],["Teto","R$ 754.243,28"]],
+          selo:{texto:"Reescrita 04/08", tipo:"critica"},
+          desc:"FRENTE INTEIRAMENTE REESCRITA — conferir com atenção redobrada. (1) Escopo novo: só quadro administrativo (auxiliar de secretaria, assistente de turno, assistente de biblioteca) e só escolas de ensino fundamental. Servente escolar, que era 92% da frente anterior, saiu; vigia saiu; toda a educação infantil saiu. (2) Metodologia nova: o padrão não é mais parâmetro externo de servidores por aluno, é o quartil inferior observado entre as 25 escolas de fundamental da própria rede (1,802 administrativos por 100 alunos, patamar que 7 delas já praticam). (3) As três pontas da faixa agora são três padrões de exigência diferentes (mediana, quartil inferior, percentil 10), não variações de encargo sobre o mesmo corte. (4) Conferir o box de abertura, que declara que a rede tem 215 administrativos contra os 316 do parâmetro antigo — é a objeção que sindicato e câmara levantariam. (5) Pendências bloqueantes em aberto: natureza de cada um dos 18 contratos (substituição de efetivo afastado x vaga estrutural), folha corrente (a base é de dezembro/2025) e concurso vigente para auxiliar de secretaria. (6) Os totais somados da Parte I foram recalculados por causa desta frente."
+        }
+      ]
+    },
+    {
+      id:"saude",
+      titulo:"Saúde",
+      fonte:"outputs_2026/18_cardapio_cortes/html (saude7l)",
+      total:[["Piso","R$ 4.652.756"],["Central","R$ 17.453.834"],["Teto","R$ 28.057.665"]],
+      nota:"Fonte mais densa: cada frente tinha códigos de evidência internos (E1–E60, P1–P8, F1–F17) e uma tabela de rastreabilidade — removidos na versão cliente. Confirmar que não sobrou nenhum resíduo desses códigos no texto final.",
+      itens:[
+        {
+          id:"MED-001", anchor:"MED-001",
+          titulo:"Compra de medicamentos por ata estadual e consórcio",
+          metricas:[["Piso","R$ 562.000"],["Central","R$ 1.260.000"],["Teto","R$ 1.950.000"]],
+          selo:{texto:"Robusta", tipo:"ok"},
+          desc:"Veredito: Robusta (agente externo independente, 06/07/2026)."
+        },
+        {
+          id:"ADM-001", anchor:"ADM-001",
+          titulo:"Realocação de apoio administrativo na atenção primária",
+          metricas:[["Piso","R$ 1.307.699"],["Central","R$ 3.807.777"],["Teto","R$ 7.712.389"]],
+          selo:{texto:"Condicional", tipo:"warn"},
+          desc:"Veredito: Condicional (agente externo independente, 06/07/2026)."
+        },
+        {
+          id:"CON-001", anchor:"CON-001",
+          titulo:"Reestruturação do contrato CIAS 101/2025",
+          metricas:[["Piso","R$ 393.300"],["Central","R$ 1.693.300"],["Teto","R$ 2.193.300"]],
+          selo:{texto:"Condicional", tipo:"warn"},
+          desc:"Veredito: Condicional (agente externo independente, 06/07/2026).",
+          ressalvas:[{tipo:"atencao", texto:"“O teto nunca é promessa” — frase precisa sobreviver literal ou equivalente, não pode virar afirmação de valor garantido."}]
+        },
+        {
+          id:"CON-002", anchor:"CON-002",
+          titulo:"Revisão dos contratos SERMEP 028/2025 e 089/2024",
+          metricas:[["Piso","R$ 416.757"],["Central","R$ 416.757"],["Teto","R$ 1.607.976"]],
+          selo:{texto:"Robusta no piso", tipo:"ok"},
+          desc:"Veredito: Robusta no componente principal — devolução do saldo não liquidado do contrato 089 (agente externo independente, 06/07/2026)."
+        },
+        {
+          id:"CON-003", anchor:"CON-003",
+          titulo:"Relicitação da atenção básica hoje prestada pela SERMEP",
+          metricas:[["Piso","R$ 0"],["Central","R$ 930.000"],["Teto","R$ 1.240.000"]],
+          selo:{texto:"Condicional", tipo:"warn"},
+          desc:"Veredito: Condicional (Consolidação Hermes, 18/07/2026).",
+          ressalvas:[{tipo:"critica", texto:"“O piso é honestamente R$ 0” — a economia depende de competição real numa nova licitação, não de sobrepreço comprovado. Além disso, 29 meses sem instrumento publicado geram exposição fiscal estimada em ~R$ 13,55 milhões: isso é RISCO JURÍDICO, não economia, e não pode ser somado ao valor central/teto. Confirmar que essa distinção continua explícita no texto."}]
+        },
+        {
+          id:"HOSP-001", anchor:"HOSP-001",
+          titulo:"Contratualização por desempenho do convênio com o HNSG",
+          metricas:[["Piso","R$ 473.000"],["Central","R$ 1.568.000"],["Teto","R$ 2.116.000"]],
+          selo:{texto:"Condicional", tipo:"warn"},
+          desc:"Veredito: Condicional (agente externo independente, 06/07/2026)."
+        },
+        {
+          id:"HOSP-002", anchor:"HOSP-002",
+          titulo:"Protocolo de parto adequado no HNSG",
+          metricas:[["Piso","R$ 0"],["Central","R$ 78.000"],["Teto","R$ 238.000"]],
+          selo:{texto:"Sem veredito", tipo:"neutral"},
+          desc:"Não submetida à auditoria externa de 06/07/2026 — confirmar que o texto deixa isso claro, sem emprestar o rigor das frentes auditadas."
+        },
+        {
+          id:"PES-002", anchor:"PES-002",
+          titulo:"Governança das horas extras da SMS",
+          metricas:[["Piso","R$ 1.500.000"],["Central","R$ 4.700.000"],["Teto","R$ 7.000.000"]],
+          selo:{texto:"Condicional", tipo:"warn"},
+          desc:"Veredito: Condicional (agente externo independente, 06/07/2026)."
+        },
+        {
+          id:"REC-001", anchor:"REC-001",
+          titulo:"Rateio intermunicipal do SAMU regional",
+          metricas:[["Piso","R$ 0"],["Central","R$ 3.000.000"],["Teto","R$ 4.000.000"]],
+          selo:{texto:"Parcial / condicional", tipo:"warn"},
+          desc:"Veredito: Parcial / condicional (Consolidação Hermes, 18/07/2026)."
+        }
+      ]
+    },
+    {
+      id:"contratos",
+      titulo:"Contratos ativos de alto valor",
+      fonte:"dashboard-contratos/comparativo-pncp/apresentacao_contratos_ativos_robustos.html",
+      nota:"Sem total somado por desenho — os 6 casos não são homogêneos o suficiente para uma soma única fazer sentido.",
+      itens:[
+        {
+          id:"Caso 1", anchor:"CTR-1",
+          titulo:"Instituição financeira para processamento da folha de pagamento (078/2023)",
+          metricas:[["60 meses","R$ 15.000.000"],["Mensal","R$ 250.000"],["Economia","R$ 900mil–1,5mi/ano"]],
+          selo:{texto:"Confiável", tipo:"ok"},
+          desc:"Único caso com selo Confiável (não Parcialmente confiável) — vale conferir com atenção redobrada por que este passou sem ressalva."
+        },
+        {
+          id:"Caso 2", anchor:"CTR-2",
+          titulo:"Kits escolares para alunos da rede pública municipal (209/2025)",
+          metricas:[["12 meses","R$ 4.199.997"],["Mensal","R$ 350.000"],["Economia","Indefinida"]],
+          selo:{texto:"Parcialmente confiável", tipo:"warn"},
+          desc:"Possível sobrepreço frente a Contagem (R$ 34/agenda), mas sem pareamento item a item ainda — confirmar que a economia continua rotulada Indefinida, não um número."
+        },
+        {
+          id:"Caso 3", anchor:"CTR-3",
+          titulo:"Locação de iluminação, sonorização de grande porte e gerador (098/2025)",
+          metricas:[["12 meses","R$ 2.991.200"],["Mensal","R$ 249.267"],["Economia","R$ 0–1,9mi/ano"]],
+          selo:{texto:"Parcialmente confiável", tipo:"warn"}
+        },
+        {
+          id:"Caso 4", anchor:"CTR-4",
+          titulo:"Locação de máquinas e equipamentos pesados com operador (167/2025)",
+          metricas:[["12 meses","R$ 1.899.955"],["Mensal","R$ 158.330"],["Economia","R$ 0–535mil/ano"]],
+          selo:{texto:"Parcialmente confiável", tipo:"warn"},
+          desc:"Comparável: Montes Claros a R$ 224,90/hora. Conferir se o valor por hora citado bate com a fonte."
+        },
+        {
+          id:"Caso 5", anchor:"CTR-5",
+          titulo:"Licença de uso de sistema de gestão pública em web integrada (253/2025)",
+          metricas:[["12 meses","R$ 3.366.041"],["Mensal","R$ 280.503"],["Economia","Indeterminada"]],
+          selo:{texto:"Parcialmente confiável", tipo:"warn"}
+        },
+        {
+          id:"Caso 6", anchor:"CTR-6",
+          titulo:"Kits reagentes para exames laboratoriais nas unidades de saúde (045/2026)",
+          metricas:[["12 meses","R$ 1.231.176"],["Mensal","R$ 102.598"],["Economia","Indeterminada"]],
+          selo:{texto:"Parcialmente confiável", tipo:"warn"}
+        },
+        {
+          id:"Complementar", anchor:"CTR-ITENS",
+          titulo:"Couve-flor: um item dentro de um contrato maior de hortifrutigranjeiros (004/2026)",
+          metricas:[["Contrato 12m","R$ 1.399.999"],["Cobertura","2,4%"],["Economia (só o item)","R$ 15.192/ano"]],
+          selo:{texto:"Cobertura baixa — 2,4%", tipo:"warn"},
+          desc:"Achado do pipeline generalizado de itens (PLANO_ITENS_MULTIPLOS.md), migrado no dia seguinte à primeira versão do cardápio. Seção deliberadamente separada dos 6 casos acima — nenhum contrato do pipeline de itens passou pela revisão de contrato inteiro (Opus), então não deve herdar o selo Confiável/Parcialmente confiável.",
+          ressalvas:[{tipo:"atencao", texto:"Confirmar que o texto deixa claro que só 1 de 19 itens do contrato foi verificado — não estender a leitura para o contrato inteiro."}]
+        }
+      ]
+    },
+    {
+      id:"fechamento",
+      titulo:"Metodologia e fechamento",
+      fonte:"seção final do cardápio (id=\"metodologia\")",
+      itens:[
+        {
+          id:"FIM-001", anchor:"metodologia",
+          titulo:"“A maioria não resiste ao escrutínio, e é assim que deve ser”",
+          desc:"Síntese de como os 6 casos sobreviventes foram filtrados de um universo maior de contratos (27 descartados na revisão). Conferir se a lógica de filtragem descrita aqui bate com o método real usado em dashboard-contratos."
+        }
+      ]
+    }
+  ];
+
+  var TAG_CLASS = {educacao:"tag-edu", saude:"tag-sau", contratos:"tag-ctr", fechamento:"tag-fim"};
+
+  var state = {};
+  try{
+    var raw = localStorage.getItem(STORAGE_KEY);
+    if(raw) state = JSON.parse(raw);
+  }catch(e){ state = {}; }
+
+  function saveState(){
+    try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }catch(e){}
+    var note = document.getElementById("save-note");
+    note.textContent = "salvo às " + new Date().toLocaleTimeString("pt-BR");
+  }
+
+  function getItemState(id){
+    return state[id] || {status:"pendente", nota:""};
+  }
+
+  function setItemState(id, patch){
+    state[id] = Object.assign(getItemState(id), patch);
+    saveState();
+    updateCounts();
+  }
+
+  function esc(s){
+    var d = document.createElement("div");
+    d.textContent = s;
+    return d.innerHTML;
+  }
+
+  function allItemIds(){
+    var ids = [];
+    BLOCOS.forEach(function(b){ b.itens.forEach(function(it){ ids.push(it.id); }); });
+    return ids;
+  }
+
+  function updateCounts(){
+    var ids = allItemIds();
+    var counts = {pendente:0, conferido:0, divergencia:0};
+    ids.forEach(function(id){
+      var st = getItemState(id).status;
+      counts[st] = (counts[st]||0) + 1;
+    });
+    document.getElementById("cnt-total").textContent = ids.length;
+    document.getElementById("cnt-pendente").textContent = counts.pendente;
+    document.getElementById("cnt-conferido").textContent = counts.conferido;
+    document.getElementById("cnt-divergencia").textContent = counts.divergencia;
+  }
+
+  function metricasHtml(metricas){
+    if(!metricas) return "";
+    return '<div class="metricas">' + metricas.map(function(m){
+      return '<div class="m"><span class="lbl">'+esc(m[0])+'</span><span class="val">'+esc(m[1])+'</span></div>';
+    }).join("") + '</div>';
+  }
+
+  function toggleGroupHtml(id, current){
+    var options = [["pendente","Pendente"],["conferido","Conferido"],["divergencia","Divergência"]];
+    return '<div class="toggle-group" role="group" aria-label="Status de conferência de '+esc(id)+'">' +
+      options.map(function(o){
+        var pressed = current === o[0];
+        return '<button type="button" data-item="'+esc(id)+'" data-state="'+o[0]+'" aria-pressed="'+pressed+'">'+o[1]+'</button>';
+      }).join("") + '</div>';
+  }
+
+  function itemHtml(bloco, item){
+    var st = getItemState(item.id);
+    var selo = item.selo ? '<span class="selo '+item.selo.tipo+'">'+esc(item.selo.texto)+'</span>' : "";
+    var ressalvasHtml = (item.ressalvas||[]).map(function(r){
+      var cls = r.tipo === "critica" ? "ressalva critica" : "ressalva";
+      var rk = r.tipo === "critica" ? "Ressalva crítica — não suavizar" : "Atenção";
+      return '<div class="'+cls+'"><span class="rk">'+rk+'</span>'+esc(r.texto)+'</div>';
+    }).join("");
+    var descHtml = item.desc ? '<p class="desc">'+esc(item.desc)+'</p>' : "";
+    return (
+      '<details class="row" data-status="'+st.status+'" data-item-id="'+esc(item.id)+'">' +
+        '<summary>' +
+          '<span class="chev">&#9656;</span>' +
+          '<span class="rowid">'+esc(item.id)+'</span>' +
+          '<span class="rowtitle"><span class="t">'+esc(item.titulo)+'</span>'+selo+'</span>' +
+          metricasHtml(item.metricas) +
+          toggleGroupHtml(item.id, st.status) +
+        '</summary>' +
+        '<div class="row-body">' +
+          descHtml +
+          ressalvasHtml +
+          '<div class="linhas">' +
+            '<a href="'+ARTIFACT_BASE+'#'+encodeURIComponent(item.anchor)+'" target="_blank" rel="noopener">abrir no cardápio &#8599;</a>' +
+            '<span>fonte do bloco: '+esc(bloco.fonte)+'</span>' +
+          '</div>' +
+          '<textarea data-note="'+esc(item.id)+'" placeholder="Anotar divergência ou observação encontrada nesta frente…">'+esc(st.nota)+'</textarea>' +
+        '</div>' +
+      '</details>'
+    );
+  }
+
+  function blocoHtml(bloco){
+    var totalHtml = bloco.total ? '<div class="bloco-total">' + bloco.total.map(function(t){
+      return '<span>'+esc(t[0])+' <b>'+esc(t[1])+'</b></span>';
+    }).join("") + '</div>' : "";
+    var notaHtml = bloco.nota ? '<div class="bloco-nota">'+esc(bloco.nota)+'</div>' : "";
+    return (
+      '<section class="bloco" id="bloco-'+bloco.id+'">' +
+        '<div class="bloco-head"><h2>'+esc(bloco.titulo)+'</h2><span class="bloco-fonte"><code>'+esc(bloco.fonte)+'</code></span></div>' +
+        totalHtml + notaHtml +
+        bloco.itens.map(function(it){ return itemHtml(bloco, it); }).join("") +
+      '</section>'
+    );
+  }
+
+  function render(){
+    document.getElementById("blocos").innerHTML = BLOCOS.map(blocoHtml).join("");
+    updateCounts();
+  }
+
+  document.addEventListener("click", function(ev){
+    var btn = ev.target.closest("button[data-item]");
+    if(btn){
+      var id = btn.getAttribute("data-item");
+      var newState = btn.getAttribute("data-state");
+      setItemState(id, {status:newState});
+      var row = btn.closest(".row");
+      row.setAttribute("data-status", newState);
+      var group = btn.parentElement;
+      Array.prototype.forEach.call(group.querySelectorAll("button"), function(b){
+        b.setAttribute("aria-pressed", String(b === btn));
+      });
+      if(newState === "divergencia") row.open = true;
+      ev.preventDefault();
+    }
+  });
+
+  document.addEventListener("input", function(ev){
+    if(ev.target.matches("textarea[data-note]")){
+      setItemState(ev.target.getAttribute("data-note"), {nota:ev.target.value});
+    }
+  });
+
+  document.getElementById("btn-reset").addEventListener("click", function(){
+    if(!confirm("Limpar todo o registro de conferência salvo neste navegador?")) return;
+    state = {};
+    saveState();
+    render();
+  });
+
+  function buildMarkdown(){
+    var lines = [];
+    lines.push("# Conferência do Cardápio Unificado");
+    lines.push("");
+    lines.push("Exportado em " + new Date().toLocaleString("pt-BR") + ".");
+    lines.push("");
+    var ids = allItemIds();
+    var counts = {pendente:0, conferido:0, divergencia:0};
+    ids.forEach(function(id){ counts[getItemState(id).status]++; });
+    lines.push("Resumo: " + counts.conferido + " conferido(s), " + counts.divergencia +
+      " com divergência, " + counts.pendente + " pendente(s), de " + ids.length + " frentes.");
+    lines.push("");
+    BLOCOS.forEach(function(bloco){
+      lines.push("## " + bloco.titulo);
+      lines.push("");
+      bloco.itens.forEach(function(item){
+        var st = getItemState(item.id);
+        var marca = st.status === "conferido" ? "[x]" : st.status === "divergencia" ? "[!]" : "[ ]";
+        lines.push("- " + marca + " **" + item.id + "** — " + item.titulo + " — status: " + st.status);
+        if(st.nota && st.nota.trim()){
+          lines.push("  - nota: " + st.nota.trim().replace(/\n/g, " "));
+        }
+      });
+      lines.push("");
+    });
+    return lines.join("\n");
+  }
+
+  document.getElementById("btn-export").addEventListener("click", function(){
+    var texto = buildMarkdown();
+
+    // Painel visível é o caminho garantido — funciona mesmo se o download
+    // programático for bloqueado pelo sandbox do iframe do Artifact.
+    var panel = document.getElementById("export-panel");
+    var output = document.getElementById("export-output");
+    output.value = texto;
+    panel.classList.add("open");
+    panel.scrollIntoView({behavior:"smooth", block:"start"});
+    output.focus();
+    output.select();
+
+    // Tentativa de download direto — funciona em navegador normal, sem
+    // efeito visível (nem erro) se o iframe não permitir.
+    try{
+      var blob = new Blob([texto], {type:"text/markdown;charset=utf-8"});
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement("a");
+      a.href = url;
+      a.download = "conferencia-cardapio-" + new Date().toISOString().slice(0,10) + ".md";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }catch(e){}
+  });
+
+  document.getElementById("btn-copy").addEventListener("click", function(){
+    var output = document.getElementById("export-output");
+    var note = document.getElementById("copy-note");
+    output.focus();
+    output.select();
+    function ok(){ note.textContent = "copiado ✓"; setTimeout(function(){ note.textContent = ""; }, 2500); }
+    function fail(){ note.textContent = "não deu pra copiar automaticamente — o texto já está selecionado, use Ctrl+C"; }
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(output.value).then(ok, function(){
+        try{ document.execCommand("copy"); ok(); }catch(e){ fail(); }
+      });
+    }else{
+      try{ document.execCommand("copy"); ok(); }catch(e){ fail(); }
+    }
+  });
+
+  render();
+})();
+</script>
