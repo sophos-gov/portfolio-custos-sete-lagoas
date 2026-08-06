@@ -1,0 +1,10 @@
+.env
+venv/
+__pycache__/
+*.pyc
+checkpoints/
+legislacao_cache/
+progress.jsonl
+RELATORIO_EXECUCAO.md
+analysis/tabelas/
+output/

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Auditoria da Educação — Sete Lagoas 2025</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<style>
+  :root{
+    --azul-escuro:#1B3A5C; --azul-medio:#2E86AB; --azul-claro:#A3CEF1;
+    --verde:#28A745; --vermelho:#E63946; --amarelo:#F4A261; --laranja:#E76F51;
+    --cinza:#343A40; --fundo:#F8F9FA; --branco:#FFFFFF;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{font-family:'Segoe UI',Arial,sans-serif; background:var(--fundo); color:var(--cinza); padding:24px;}
+  header{background:linear-gradient(135deg,var(--azul-escuro),var(--azul-medio)); color:#fff; padding:32px; border-radius:12px; margin-bottom:24px;}
+  header h1{font-size:28px; margin-bottom:8px;} header p{opacity:.9;}
+  .grid{display:grid; gap:16px;} .kpi-row{grid-template-columns:repeat(4,1fr);} @media(max-width:900px){.kpi-row{grid-template-columns:repeat(2,1fr);}}
+  .card{background:var(--branco); border-radius:12px; padding:20px; box-shadow:0 2px 8px rgba(0,0,0,.06);}
+  .kpi{border-left:5px solid var(--azul-medio);}
+  .kpi .label{font-size:12px; text-transform:uppercase; color:#6c757d; letter-spacing:.5px;}
+  .kpi .value{font-size:26px; font-weight:700; margin-top:6px; color:var(--azul-escuro);}
+  .kpi.vermelha{border-color:var(--vermelho);} .kpi.verde{border-color:var(--verde);}
+  .kpi.amarela{border-color:var(--amarelo);} .kpi.laranja{border-color:var(--laranja);}
+  h2{color:var(--azul-escuro); margin:28px 0 14px; font-size:20px; border-bottom:2px solid var(--azul-claro); padding-bottom:6px;}
+  table{width:100%; border-collapse:collapse; font-size:13px;}
+  th{background:var(--azul-escuro); color:#fff; padding:10px; text-align:left;}
+  td{padding:8px 10px; border-bottom:1px solid #e9ecef;}
+  tr:nth-child(even){background:#f1f3f5;}
+  .badge{display:inline-block; padding:3px 10px; border-radius:12px; font-size:11px; font-weight:600; color:#fff;}
+  .b-verde{background:var(--verde);} .b-vermelha{background:var(--vermelho);}
+  .b-amarela{background:var(--amarelo);} .b-laranja{background:var(--laranja);}
+  .alert{padding:12px 16px; border-radius:8px; margin:8px 0; font-size:14px;}
+  .alert.crit{background:#fdecea; border-left:4px solid var(--vermelho);}
+  .alert.warn{background:#fff7e6; border-left:4px solid var(--amarelo);}
+  .alert.ok{background:#e8f7ee; border-left:4px solid var(--verde);}
+  .chart-box{position:relative; height:300px;}
+  .limitacao{background:#fff3cd; padding:14px; border-radius:8px; font-size:13px; margin:16px 0;}
+  footer{margin-top:32px; font-size:12px; color:#6c757d; text-align:center;}
+</style>
+</head>
+<body>
+<header>
+  <h1>🔬 Auditoria da Educação — Sete Lagoas/2025</h1>
+  <p>MDE (25%) e Fundeb · Fonte: SICOM/TCE-MG · Análise preventiva de glosas e conformidade</p>
+</header>
+
+<section class="grid kpi-row">
+  <div class="card kpi"><div class="label">Empenhos Educação</div><div class="value">2363</div></div>
+  <div class="card kpi vermelha"><div class="label">Zona Vermelha (glosável)</div><div class="value">174</div></div>
+  <div class="card kpi amarela"><div class="label">Zona Amarela (cautelar)</div><div class="value">1604</div></div>
+  <div class="card kpi laranja"><div class="label">Índice Conversão</div><div class="value">97.3%</div></div>
+</section>
+
+<div class="limitacao">
+  ⚠️ <strong>Limitação:</strong> os ZIPs do SICOM não contêm arquivo de receita. O índice de 25% é
+  <strong>simulado</strong> (denominador proxy). Não serve para prestação de contas oficial.
+   Este município não recebe VAAT (fonte 1.542 ausente) — validações VAAT não aplicáveis.
+</div>
+
+<h2>🔴 Despesas com Risco de Glosa</h2>
+
+<div class="alert crit">⚠️ 174 empenho(s) classificados na <strong>Zona Vermelha</strong> (glosáveis — Art. 71 LDB / EC 108). Estorno + remanejamento de fonte recomendado.</div>
+
+
+<div class="grid" style="grid-template-columns:1fr 1fr;">
+  <div class="card"><h3 style="margin-bottom:12px;">Distribuição por Zona</h3><div class="chart-box"><canvas id="czonas"></canvas></div></div>
+  <div class="card"><h3 style="margin-bottom:12px;">Glosas por Categoria</h3><div class="chart-box"><canvas id="cglosa"></canvas></div></div>
+</div>
+
+
+<h2>📋 Detalhamento de Glosas Detectadas</h2>
+<div class="card" style="overflow-x:auto;">
+<table>
+<tr><th>Categoria</th><th>Zona</th><th>Nº Empenhos</th><th>Valor Empenhado (R$)</th></tr>
+
+<tr><td>merenda</td><td><span class="badge b-vermelha">VERMELHA</span></td><td>162</td><td>R$ 8.488.603,84</td></tr>
+
+<tr><td>inativo</td><td><span class="badge b-vermelha">VERMELHA</span></td><td>9</td><td>R$ 2.217.486,62</td></tr>
+
+<tr><td>uniforme</td><td><span class="badge b-vermelha">VERMELHA</span></td><td>1</td><td>R$ 459.033,50</td></tr>
+
+<tr><td>copa_agua</td><td><span class="badge b-vermelha">VERMELHA</span></td><td>10</td><td>R$ 137.583,71</td></tr>
+
+<tr><td>diarias_capacitacao</td><td><span class="badge b-vermelha">VERMELHA</span></td><td>65</td><td>R$ 132.388,60</td></tr>
+
+</table>
+</div>
+
+
+<h2>💰 Validações do Fundeb</h2>
+<div class="grid kpi-row">
+  <div class="card kpi verde"><div class="label">Piso 70% (proxy)</div><div class="value">113.2%</div><div style="font-size:11px;margin-top:4px;">meta ≥ 70%</div></div>
+  <div class="card kpi"><div class="label">VAAT Infantil</div><div class="value">N/A</div><div style="font-size:11px;">meta ≥ 50%</div></div>
+  <div class="card kpi"><div class="label">VAAT Capital</div><div class="value">N/A</div><div style="font-size:11px;">meta ≥ 15%</div></div>
+  <div class="card kpi laranja"><div class="label">RP Não Processado</div><div class="value">7555061</div></div>
+</div>
+
+<div class="alert ok">Índice 113.2% — piso cumprido, mas >100% da receita do Fundeb do exercício é incomum. Possíveis causas: uso de saldo financeiro/superávit de exercícios anteriores, ou despesa de pessoal em fonte Fundeb classificada além do repasse do ano corrente. Base: receita.csv SICOM (fonte Fundeb). Recomenda-se conciliar com o extrato da conta vinculada do Fundeb.</div>
+<div class="alert warn">RP (11,528,101) > 10% Fundeb (11,198,115); RP não processado elevado vs processado — risco de maquiagem do índice</div>
+<div class="alert warn">⏰ Tempo Integral (4%): Nenhuma ação/IDU de 'Tempo Integral' identificada. Impossível validar os 4% (EC 135/2024). Exige marcação orçamentária específica.</div>
+
+<h2>📊 Temporal: Índice de Conversão (Liquidado/Empenhado)</h2>
+<div class="card"><div class="chart-box"><canvas id="cic"></canvas></div></div>
+
+
+<h2>🚨 Empenhos Tardios de Capital (nov/dez)</h2>
+<div class="alert warn">3 empenho(s) de CAPITAL emitido(s) em nov/dez — risco de não liquidação no exercício.</div>
+
+<h2>📈 Simulação do Índice de 25% MDE</h2>
+<div class="alert ok">
+  Índice apurado em 31.47% (meta 25%), com base na Receita Líquida de Impostos e Transferências (RLIT) realizada — fonte 1.500 do receita.csv SICOM. Apuração via classificação de Fonte de Recursos do SICOM, não o RREO Anexo 10 oficial — reconciliar com o RREO/SIOPE do exercício antes de uso em prestação de contas.
+</div>
+
+<footer>
+  Skill <code>sicom-auditoria-educacao</code> · Análise automatizada · Conforme LDB (Arts. 70/71), Lei 14.113/2020, EC 135/2024 · 2026-07-20
+</footer>
+
+<script>
+const CORES={verde:'#28A745',vermelha:'#E63946',amarela:'#F4A261',laranja:'#E76F51',azul:'#2E86AB',cinza:'#6c757d'};
+new Chart(document.getElementById('czonas'),{type:'doughnut',data:{labels:['Verde','Amarela','Laranja','Vermelha'],datasets:[{data:[582,1604,3,174],backgroundColor:[CORES.verde,CORES.amarela,CORES.laranja,CORES.vermelha]}],options:{plugins:{legend:{position:'bottom'}}}});
+
+new Chart(document.getElementById('cglosa'),{type:'bar',data:{labels:['merenda', 'inativo', 'uniforme', 'copa_agua', 'diarias_capacitacao'],datasets:[{label:'Nº empenhos',data:[162, 9, 1, 10, 65],backgroundColor:CORES.azul}]},options:{indexAxis:'y',plugins:{legend:{display:false}}}});
+
+
+new Chart(document.getElementById('cic'),{type:'line',data:{labels:['Mês 1', 'Mês 2', 'Mês 3', 'Mês 4', 'Mês 5', 'Mês 6', 'Mês 7', 'Mês 8', 'Mês 9', 'Mês 10', 'Mês 11', 'Mês 12'],datasets:[{label:'IC %',data:[63.6, 94.0, 97.7, 82.2, 102.2, 107.4, 94.7, 99.8, 93.9, 103.1, 109.5, 108.7],borderColor:CORES.azul,backgroundColor:'rgba(46,134,171,.1)',fill:true}]},options:{plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,max:120}}}});
+
+</script>
+</body>
+</html>

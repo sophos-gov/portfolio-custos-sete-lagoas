@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Custos da Educação — Sete Lagoas 2025</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<style>
+:root {
+    --azul-escuro:  #1B3A5C;
+    --azul-medio:   #2E86AB;
+    --azul-claro:   #A3CEF1;
+    --verde:        #28A745;
+    --vermelho:     #E63946;
+    --amarelo:      #F4A261;
+    --cinza-escuro: #343A40;
+    --cinza-medio:  #6C757D;
+    --fundo:        #F8F9FA;
+    --branco:       #FFFFFF;
+    --fonte: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--fonte); background: var(--fundo); color: var(--cinza-escuro); line-height: 1.6; }
+
+.nav-sidebar {
+    position: fixed; left: 0; top: 0;
+    width: 220px; height: 100vh;
+    background: var(--azul-escuro);
+    padding: 1.5rem 1rem; overflow-y: auto; z-index: 100;
+}
+.nav-logo { color: white; font-weight: 700; margin-bottom: 1.5rem; font-size: 0.9rem; line-height: 1.4; }
+.nav-logo small { opacity: 0.6; display: block; font-size: 0.75rem; margin-top: 0.25rem; }
+.nav-sidebar a {
+    display: block; color: rgba(255,255,255,0.7); text-decoration: none;
+    padding: 0.45rem 0.75rem; border-radius: 4px; font-size: 0.82rem;
+    margin-bottom: 0.2rem; transition: all 0.2s;
+}
+.nav-sidebar a:hover, .nav-sidebar a.active { background: var(--azul-medio); color: var(--branco); }
+
+.main-content { margin-left: 220px; padding: 2rem 2.5rem; max-width: 1100px; }
+
+.hero {
+    background: linear-gradient(135deg, var(--azul-escuro), var(--azul-medio));
+    color: white; padding: 2.5rem; border-radius: 16px; margin-bottom: 2rem;
+}
+.hero h1 { font-size: 1.9rem; margin-bottom: 0.5rem; }
+.hero .periodo { font-size: 0.85rem; opacity: 0.7; margin-bottom: 1rem; }
+.action-title-hero { font-size: 1.1rem; opacity: 0.92; font-weight: 400; max-width: 750px; line-height: 1.5; }
+.kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 1rem; margin-top: 2rem; }
+.kpi-card { background: rgba(255,255,255,0.15); border-radius: 10px; padding: 1.1rem; text-align: center; }
+.kpi-label { font-size: 0.72rem; opacity: 0.8; text-transform: uppercase; letter-spacing: 0.06em; }
+.kpi-value { font-size: 1.5rem; font-weight: 700; margin: 0.2rem 0; }
+.kpi-sub   { font-size: 0.78rem; opacity: 0.7; }
+
+.section {
+    background: var(--branco); border-radius: 12px; padding: 2rem 2.5rem;
+    margin-bottom: 1.5rem; box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+.section-id { font-size: 0.68rem; color: var(--azul-medio); text-transform: uppercase;
+              letter-spacing: 0.09em; font-weight: 600; margin-bottom: 0.4rem; }
+.action-title {
+    font-size: 1.15rem; font-weight: 600; color: var(--azul-escuro);
+    border-left: 4px solid var(--azul-medio); padding-left: 1rem;
+    margin-bottom: 1.5rem; line-height: 1.45;
+}
+.chart-container { position: relative; height: 380px; margin: 1rem 0 1.5rem; }
+.chart-container.tall { height: 460px; }
+.chart-container.short { height: 280px; }
+
+.data-table { width: 100%; border-collapse: collapse; font-size: 0.86rem; margin-top: 1rem; }
+.data-table th { background: var(--azul-escuro); color: white; padding: 0.55rem 0.8rem;
+                 text-align: left; font-weight: 500; }
+.data-table td { padding: 0.45rem 0.8rem; border-bottom: 1px solid var(--fundo); }
+.data-table tr:hover td { background: var(--fundo); }
+.heat-high { background: #FDECEA; color: var(--vermelho); font-weight: 600; }
+.heat-med  { background: #FFF8E1; color: #856404; }
+.heat-low  { background: #E8F5E9; color: #2E7D32; }
+.num-col { text-align: right; font-variant-numeric: tabular-nums; }
+.pct-bar { display: inline-block; height: 8px; background: var(--azul-claro); border-radius: 4px; margin-left: 6px; vertical-align: middle; }
+
+.rec-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; }
+.rec-card { border-left: 4px solid var(--verde); padding: 1.2rem;
+            background: #F0FFF4; border-radius: 0 10px 10px 0; }
+.rec-label { font-size: 0.68rem; font-weight: 700; color: var(--azul-medio);
+             text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.3rem; }
+.rec-insight    { font-size: 0.92rem; color: var(--cinza-escuro); margin-bottom: 0.5rem; }
+.rec-implicacao { font-size: 0.85rem; color: var(--cinza-medio); margin-bottom: 0.7rem; }
+.rec-acao { font-size: 0.85rem; font-weight: 600; color: var(--azul-escuro); }
+.rec-acao::before { content: "→ "; color: var(--verde); }
+
+.analise-cruzada {
+    background: #EBF4FF; border-left: 4px solid var(--azul-medio);
+    padding: 1.2rem 1.5rem; border-radius: 0 10px 10px 0;
+    font-size: 0.95rem; line-height: 1.7; color: var(--cinza-escuro);
+    margin-bottom: 1.5rem;
+}
+.alertas-titulo { font-size: 0.72rem; font-weight: 700; color: var(--vermelho);
+                  text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.75rem; }
+.alerta-grid { display: flex; flex-direction: column; gap: 0.6rem; margin-bottom: 1.75rem; }
+.alerta-card { border-left: 4px solid var(--vermelho); background: #FFF5F5;
+               padding: 0.85rem 1.2rem; border-radius: 0 8px 8px 0;
+               font-size: 0.875rem; line-height: 1.55; color: var(--cinza-escuro); }
+.alerta-card strong { color: var(--vermelho); }
+
+@media (max-width: 768px) {
+    .nav-sidebar  { display: none; }
+    .main-content { margin-left: 0; padding: 1rem; }
+    .hero         { padding: 1.5rem; }
+    .hero h1      { font-size: 1.35rem; }
+    .chart-container { height: 260px; }
+}
+</style>
+</head>
+<body>
+
+<nav class="nav-sidebar">
+    <div class="nav-logo">🎓 Custos Educação<small>Sete Lagoas · 2025</small></div>
+    <a href="#hero">Resumo Executivo</a>
+    <a href="#programas">Composição por Programa</a>
+    <a href="#natureza">Natureza de Despesa</a>
+    <a href="#acoes">Por Ação</a>
+    <a href="#fornecedores">Fornecedores</a>
+    <a href="#categorias">Categorias de Custo</a>
+    <a href="#mensal">Evolução Mensal</a>
+    <a href="#fontes">Fontes de Recurso</a>
+    <a href="#pessoal">Análise de Pessoal</a>
+    <a href="#sintese">Síntese Analítica</a>
+    <a href="#recomendacoes">Recomendações</a>
+</nav>
+
+<div class="main-content">
+
+<!-- HERO -->
+<section class="hero" id="hero">
+    <h1>Custos da Educação — Sete Lagoas 2025</h1>
+    <div class="periodo">🎓 Jan–Dez 2025 · Sete Lagoas (MG) · SICOM/TCE-MG + Folha de Pessoal</div>
+    <p class="action-title-hero">R$48,5 mi em dezembro dobraram a média mensal: 81% da despesa é folha, sinalizando rigidez orçamentária crítica ao secretário</p>
+    <div class="kpi-grid">
+        <div class="kpi-card">
+            <div class="kpi-label">Total Pago</div>
+            <div class="kpi-value">R$ 283,8M</div>
+            <div class="kpi-sub">R$ 283.782.204</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-label">Total Empenhado</div>
+            <div class="kpi-value">R$ 295,4M</div>
+            <div class="kpi-sub">R$ 295.362.895</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-label">Servidores</div>
+            <div class="kpi-value">4,020</div>
+            <div class="kpi-sub">folha 10 meses 2025</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-label">Fornecedores</div>
+            <div class="kpi-value">312</div>
+            <div class="kpi-sub">2,468 empenhos</div>
+        </div>
+    </div>
+</section>
+
+<!-- PROGRAMAS -->
+<section class="section" id="programas">
+    <div class="section-id">Seção 2 — Composição por Programa</div>
+    <div class="action-title">86,4% concentrados em Universalização revela aposta quase exclusiva num único programa, enquanto Educação Profissional e Nível Superior ficaram com execução zero</div>
+    <div class="chart-container"><canvas id="chartProg"></canvas></div>
+    <table class="data-table">
+        <thead><tr><th>Programa</th><th class="num-col">Valor Pago</th>
+        <th class="num-col">% Total</th><th class="num-col">Empenhado</th></tr></thead>
+        <tbody><tr>
+            <td>2084 - UNIVERSALIZACAO</td>
+            <td class="num-col">R$ 245.229.395</td>
+            <td class="num-col heat-high">86.4%<span class="pct-bar" style="width:129px"></span></td>
+            <td class="num-col">R$ 255.491.410</td>
+        </tr><tr>
+            <td>2051 - GESTAO ADMINISTRATIVA</td>
+            <td class="num-col">R$ 15.199.111</td>
+            <td class="num-col heat-low">5.4%<span class="pct-bar" style="width:8px"></span></td>
+            <td class="num-col">R$ 16.333.755</td>
+        </tr><tr>
+            <td>2050 - OPERACOES ESPECIAIS</td>
+            <td class="num-col">R$ 14.595.756</td>
+            <td class="num-col heat-low">5.1%<span class="pct-bar" style="width:7px"></span></td>
+            <td class="num-col">R$ 14.604.023</td>
+        </tr><tr>
+            <td>2085 - EDUCACAO</td>
+            <td class="num-col">R$ 8.685.996</td>
+            <td class="num-col heat-low">3.1%<span class="pct-bar" style="width:4px"></span></td>
+            <td class="num-col">R$ 8.849.330</td>
+        </tr><tr>
+            <td>2055 - CORDENACAO DE POLITICAS</td>
+            <td class="num-col">R$ 71.120</td>
+            <td class="num-col heat-low">0.0%<span class="pct-bar" style="width:0px"></span></td>
+            <td class="num-col">R$ 83.120</td>
+        </tr><tr>
+            <td>2057 - PROMOCAO DOS DIREITOS DA CRIANCA</td>
+            <td class="num-col">R$ 826</td>
+            <td class="num-col heat-low">0.0%<span class="pct-bar" style="width:0px"></span></td>
+            <td class="num-col">R$ 1.256</td>
+        </tr><tr>
+            <td>2063 - EDUCACAO PROFISSIONAL E TECNOLOGIA</td>
+            <td class="num-col">R$ 0</td>
+            <td class="num-col heat-low">0.0%<span class="pct-bar" style="width:0px"></span></td>
+            <td class="num-col">R$ 0</td>
+        </tr><tr>
+            <td>2065 - TRABALHO EMPREGO E RENDA</td>
+            <td class="num-col">R$ 0</td>
+            <td class="num-col heat-low">0.0%<span class="pct-bar" style="width:0px"></span></td>
+            <td class="num-col">R$ 0</td>
+        </tr><tr>
+            <td>2064 - EDUCACAO NIVEL SUPERIOR</td>
+            <td class="num-col">R$ 0</td>
+            <td class="num-col heat-low">0.0%<span class="pct-bar" style="width:0px"></span></td>
+            <td class="num-col">R$ 0</td>
+        </tr></tbody></table>
+</section>
+
+<!-- NATUREZA -->
+<section class="section" id="natureza">
+    <div class="section-id">Seção 3 — Natureza de Despesa</div>
+    <div class="action-title">81,1% em Pessoal e apenas 0,69% em Investimentos expõem uma secretaria operando no limite da rigidez, com capacidade mínima de transformação estrutural</div>
+    <div class="chart-container short"><canvas id="chartNat"></canvas></div>
+</section>
+
+<!-- AÇÕES -->
+<section class="section" id="acoes">
+    <div class="section-id">Seção 4 — Composição por Ação</div>
+    <div class="action-title">81% da despesa paga numa única ação de remuneração de servidores — as 10 ações restantes disputam menos de 19% do orçamento total</div>
+    <div class="chart-container tall"><canvas id="chartAcoes"></canvas></div>
+</section>
+
+<!-- FORNECEDORES -->
+<section class="section" id="fornecedores">
+    <div class="section-id">Seção 5 — Top Fornecedores</div>
+    <div class="action-title">75,3% dos pagamentos ao próprio Município e 91,2% nos 5 maiores credores revelam concentração extrema com risco de dependência e baixa competitividade</div>
+    <div class="chart-container"><canvas id="chartForn"></canvas></div>
+    <div class="chart-container short" style="margin-top:1.5rem">
+        <canvas id="chartPareto"></canvas>
+    </div>
+    <table class="data-table">
+        <thead><tr><th>#</th><th>Fornecedor</th><th class="num-col">Total Pago</th>
+        <th class="num-col">% Total</th><th class="num-col">% Acumulado</th></tr></thead>
+        <tbody><tr>
+            <td>1</td>
+            <td>MUNICIPIO DE SETE LAGOAS</td>
+            <td class="num-col">R$ 217.070.950</td>
+            <td class="num-col heat-high">75.3%</td>
+            <td class="num-col">75.3%</td>
+        </tr><tr>
+            <td>2</td>
+            <td>INSTITUTO NACIONAL DO SEGURO SOCIAL</td>
+            <td class="num-col">R$ 35.973.998</td>
+            <td class="num-col heat-high">12.5%</td>
+            <td class="num-col">87.8%</td>
+        </tr><tr>
+            <td>3</td>
+            <td>ARCOLIMP SERVICOS GERAIS LTDA</td>
+            <td class="num-col">R$ 4.911.976</td>
+            <td class="num-col ">1.7%</td>
+            <td class="num-col">89.5%</td>
+        </tr><tr>
+            <td>4</td>
+            <td>COMERCIAL ARTIGOS DE ESCRITORIO E PAPELARIA BARCEL</td>
+            <td class="num-col">R$ 3.288.997</td>
+            <td class="num-col ">1.1%</td>
+            <td class="num-col">90.7%</td>
+        </tr><tr>
+            <td>5</td>
+            <td>BEEFALLO CARNES DO BRASIL LTDA</td>
+            <td class="num-col">R$ 1.670.470</td>
+            <td class="num-col ">0.6%</td>
+            <td class="num-col">91.2%</td>
+        </tr><tr>
+            <td>6</td>
+            <td>CONSORCIO INTERMUNICIPAL DE SAUDE E DE POLITICAS D</td>
+            <td class="num-col">R$ 1.650.590</td>
+            <td class="num-col ">0.6%</td>
+            <td class="num-col">91.8%</td>
+        </tr><tr>
+            <td>7</td>
+            <td>VALORE AMBIENTAL LTDA</td>
+            <td class="num-col">R$ 1.040.665</td>
+            <td class="num-col ">0.4%</td>
+            <td class="num-col">92.2%</td>
+        </tr><tr>
+            <td>8</td>
+            <td>NUVEM DISTRIBUIDORA LTDA</td>
+            <td class="num-col">R$ 925.116</td>
+            <td class="num-col ">0.3%</td>
+            <td class="num-col">92.5%</td>
+        </tr><tr>
+            <td>9</td>
+            <td>COOPERATIVA DOS AGRICULTORES FAMILIARES DE JEQUITI</td>
+            <td class="num-col">R$ 828.038</td>
+            <td class="num-col ">0.3%</td>
+            <td class="num-col">92.8%</td>
+        </tr><tr>
+            <td>10</td>
+            <td>LATICINIOS SANTA RITA LTDA</td>
+            <td class="num-col">R$ 786.699</td>
+            <td class="num-col ">0.3%</td>
+            <td class="num-col">93.0%</td>
+        </tr><tr>
+            <td>11</td>
+            <td>GUILHERME SCUIRA</td>
+            <td class="num-col">R$ 689.331</td>
+            <td class="num-col ">0.2%</td>
+            <td class="num-col">93.3%</td>
+        </tr><tr>
+            <td>12</td>
+            <td>INGLES FACIL EXPRESS LTDA</td>
+            <td class="num-col">R$ 685.400</td>
+            <td class="num-col ">0.2%</td>
+            <td class="num-col">93.5%</td>
+        </tr><tr>
+            <td>13</td>
+            <td>PORT DISTRIBUIDORA DE INFORMATICA E PAPELARIA LTDA</td>
+            <td class="num-col">R$ 684.836</td>
+            <td class="num-col ">0.2%</td>
+            <td class="num-col">93.8%</td>
+        </tr><tr>
+            <td>14</td>
+            <td>COOPERATIVA DOS AGRICULTORES FAMILIARES DE SETE LA</td>
+            <td class="num-col">R$ 632.211</td>
+            <td class="num-col ">0.2%</td>
+            <td class="num-col">94.0%</td>
+        </tr><tr>
+            <td>15</td>
+            <td>CODESEL COMPANHIA DE DESENVOLVIMENTO DE SETE LAGOA</td>
+            <td class="num-col">R$ 622.823</td>
+            <td class="num-col ">0.2%</td>
+            <td class="num-col">94.2%</td>
+        </tr><tr>
+            <td>16</td>
+            <td>SERVICO AUTONOMO DE AGUA, ESGOTO E SANEAMENTO URBA</td>
+            <td class="num-col">R$ 565.476</td>
+            <td class="num-col ">0.2%</td>
+            <td class="num-col">94.4%</td>
+        </tr><tr>
+            <td>17</td>
+            <td>ANDRADE TRANSPORTES E LOCACOES LTDA</td>
+            <td class="num-col">R$ 530.235</td>
+            <td class="num-col ">0.2%</td>
+            <td class="num-col">94.6%</td>
+        </tr><tr>
+            <td>18</td>
+            <td>FUNDACAO EDUCACIONAL MONSENHOR MESSIAS</td>
+            <td class="num-col">R$ 525.105</td>
+            <td class="num-col ">0.2%</td>
+            <td class="num-col">94.8%</td>
+        </tr><tr>
+            <td>19</td>
+            <td>THIAGO MARTINS RIBEIRO</td>
+            <td class="num-col">R$ 489.340</td>
+            <td class="num-col ">0.2%</td>
+            <td class="num-col">94.9%</td>
+        </tr><tr>
+            <td>20</td>
+            <td>MV TERRAPLANAGEM E LOCACOES LTDA</td>
+            <td class="num-col">R$ 466.636</td>
+            <td class="num-col ">0.2%</td>
+            <td class="num-col">95.1%</td>
+        </tr></tbody></table>
+</section>
+
+<!-- CATEGORIAS -->
+<section class="section" id="categorias">
+    <div class="section-id">Seção 6 — Categorias de Custo</div>
+    <div class="action-title">Pessoal (80,5%) somado a Previdência (5,5%) consome 86% do empenhado, deixando apenas 14% para custeio, alimentação e investimento nas escolas</div>
+    <div class="chart-container short"><canvas id="chartCat"></canvas></div>
+    <table class='data-table' style='font-size:0.78rem;margin-top:1rem'><thead><tr><th>Categoria</th><th class='num-col'>Jan</th><th class='num-col'>Fev</th><th class='num-col'>Mar</th><th class='num-col'>Abr</th><th class='num-col'>Mai</th><th class='num-col'>Jun</th><th class='num-col'>Jul</th><th class='num-col'>Ago</th><th class='num-col'>Set</th><th class='num-col'>Out</th><th class='num-col'>Nov</th><th class='num-col'>Dez</th></tr></thead><tbody><tr><td>Alimentação</td><td class='num-col heat-med'>R$ 787 mil</td><td class='num-col heat-med'>R$ 579 mil</td><td class='num-col heat-high'>R$ 1,4M</td><td class='num-col heat-med'>R$ 714 mil</td><td class='num-col heat-high'>R$ 1,0M</td><td class='num-col '>R$ 311 mil</td><td class='num-col heat-med'>R$ 807 mil</td><td class='num-col heat-med'>R$ 810 mil</td><td class='num-col heat-high'>R$ 1,0M</td><td class='num-col heat-high'>R$ 1,2M</td><td class='num-col '>R$ 240 mil</td><td class='num-col '>R$ 104 mil</td></tr><tr><td>Investimentos</td><td class='num-col '>R$ 21 mil</td><td class='num-col '>R$ 120 mil</td><td class='num-col '>R$ 221 mil</td><td class='num-col '>R$ 150 mil</td><td class='num-col heat-med'>R$ 1,4M</td><td class='num-col '>R$ 67 mil</td><td class='num-col '>R$ 33 mil</td><td class='num-col '>R$ 17 mil</td><td class='num-col heat-high'>R$ 2,2M</td><td class='num-col '>R$ 211 mil</td><td class='num-col '>—</td><td class='num-col '>R$ 215 mil</td></tr><tr><td>Limpeza</td><td class='num-col heat-med'>R$ 100 mil</td><td class='num-col '>R$ 56 mil</td><td class='num-col '>R$ 2 mil</td><td class='num-col heat-med'>R$ 101 mil</td><td class='num-col '>R$ 2 mil</td><td class='num-col '>R$ 3 mil</td><td class='num-col '>R$ 40 mil</td><td class='num-col '>R$ 19 mil</td><td class='num-col '>R$ 115</td><td class='num-col heat-high'>R$ 274 mil</td><td class='num-col '>—</td><td class='num-col '>—</td></tr><tr><td>Manutenção</td><td class='num-col '>R$ 38 mil</td><td class='num-col heat-high'>R$ 96 mil</td><td class='num-col heat-high'>R$ 128 mil</td><td class='num-col heat-high'>R$ 93 mil</td><td class='num-col '>R$ 18 mil</td><td class='num-col '>R$ 26 mil</td><td class='num-col heat-med'>R$ 75 mil</td><td class='num-col '>R$ 5 mil</td><td class='num-col '>R$ 3 mil</td><td class='num-col heat-med'>R$ 53 mil</td><td class='num-col heat-med'>R$ 71 mil</td><td class='num-col heat-high'>R$ 94 mil</td></tr><tr><td>Material expediente/pedagógico</td><td class='num-col heat-high'>R$ 3,7M</td><td class='num-col '>R$ 245 mil</td><td class='num-col '>R$ 123 mil</td><td class='num-col '>R$ 17 mil</td><td class='num-col '>R$ 181</td><td class='num-col '>—</td><td class='num-col '>R$ 52 mil</td><td class='num-col '>R$ 278 mil</td><td class='num-col '>R$ 5 mil</td><td class='num-col heat-med'>R$ 1,2M</td><td class='num-col '>R$ 16 mil</td><td class='num-col '>R$ 326</td></tr><tr><td>Material hospitalar</td><td class='num-col '>—</td><td class='num-col '>—</td><td class='num-col '>—</td><td class='num-col heat-med'>R$ 6 mil</td><td class='num-col '>—</td><td class='num-col '>—</td><td class='num-col '>R$ 322</td><td class='num-col '>R$ 3 mil</td><td class='num-col '>—</td><td class='num-col heat-high'>R$ 10 mil</td><td class='num-col '>—</td><td class='num-col '>—</td></tr><tr><td>Outros</td><td class='num-col heat-high'>R$ 309 mil</td><td class='num-col '>R$ 2 mil</td><td class='num-col '>R$ 40 mil</td><td class='num-col '>R$ 6 mil</td><td class='num-col '>R$ 88 mil</td><td class='num-col '>R$ 4 mil</td><td class='num-col heat-high'>R$ 290 mil</td><td class='num-col '>R$ 2 mil</td><td class='num-col '>R$ 80 mil</td><td class='num-col '>R$ 4 mil</td><td class='num-col '>R$ 88 mil</td><td class='num-col '>R$ 18 mil</td></tr><tr><td>Pessoal</td><td class='num-col heat-med'>R$ 13,2M</td><td class='num-col heat-med'>R$ 24,9M</td><td class='num-col heat-med'>R$ 20,6M</td><td class='num-col heat-med'>R$ 20,9M</td><td class='num-col heat-med'>R$ 21,4M</td><td class='num-col heat-med'>R$ 18,8M</td><td class='num-col heat-med'>R$ 21,4M</td><td class='num-col heat-med'>R$ 22,6M</td><td class='num-col heat-med'>R$ 21,4M</td><td class='num-col heat-med'>R$ 19,0M</td><td class='num-col heat-med'>R$ 23,1M</td><td class='num-col heat-high'>R$ 38,3M</td></tr><tr><td>Previdência</td><td class='num-col '>R$ 503 mil</td><td class='num-col '>R$ 1,1M</td><td class='num-col '>R$ 546 mil</td><td class='num-col '>R$ 386 mil</td><td class='num-col '>R$ 848 mil</td><td class='num-col '>R$ 839 mil</td><td class='num-col '>R$ 752 mil</td><td class='num-col '>R$ 756 mil</td><td class='num-col '>R$ 577 mil</td><td class='num-col '>R$ 341 mil</td><td class='num-col '>R$ 437 mil</td><td class='num-col heat-high'>R$ 10,9M</td></tr><tr><td>Serviços terceirizados</td><td class='num-col '>R$ 1,3M</td><td class='num-col heat-med'>R$ 3,3M</td><td class='num-col '>R$ 1,1M</td><td class='num-col heat-high'>R$ 4,7M</td><td class='num-col '>R$ 961 mil</td><td class='num-col '>R$ 482 mil</td><td class='num-col heat-med'>R$ 2,9M</td><td class='num-col heat-med'>R$ 1,7M</td><td class='num-col heat-med'>R$ 2,5M</td><td class='num-col '>R$ 382 mil</td><td class='num-col '>R$ 1,1M</td><td class='num-col heat-med'>R$ 1,8M</td></tr><tr><td>TI</td><td class='num-col '>—</td><td class='num-col heat-high'>R$ 1,1M</td><td class='num-col '>R$ 21 mil</td><td class='num-col '>R$ 260 mil</td><td class='num-col '>R$ 248 mil</td><td class='num-col '>—</td><td class='num-col '>—</td><td class='num-col '>R$ 820</td><td class='num-col '>R$ 17 mil</td><td class='num-col '>R$ 4 mil</td><td class='num-col '>—</td><td class='num-col '>R$ 24 mil</td></tr><tr><td>Transferências</td><td class='num-col '>—</td><td class='num-col '>—</td><td class='num-col '>—</td><td class='num-col heat-high'>R$ 6 mil</td><td class='num-col '>—</td><td class='num-col '>—</td><td class='num-col '>—</td><td class='num-col '>—</td><td class='num-col '>—</td><td class='num-col '>—</td><td class='num-col '>—</td><td class='num-col '>—</td></tr><tr><td>Transporte</td><td class='num-col heat-med'>R$ 439 mil</td><td class='num-col '>—</td><td class='num-col '>R$ 1 mil</td><td class='num-col '>—</td><td class='num-col '>R$ 62 mil</td><td class='num-col '>—</td><td class='num-col heat-high'>R$ 642 mil</td><td class='num-col '>—</td><td class='num-col '>—</td><td class='num-col '>R$ 105</td><td class='num-col '>R$ 33</td><td class='num-col '>—</td></tr></tbody></table>
+</section>
+
+<!-- MENSAL -->
+<section class="section" id="mensal">
+    <div class="section-id">Seção 7 — Evolução Mensal</div>
+    <div class="action-title">Dezembro pagou R$48,5 mi — 4,65 vezes o valor de janeiro (R$10,4 mi) — indicando acúmulo de restos e liquidações forçadas no encerramento</div>
+    <div class="chart-container"><canvas id="chartMensal"></canvas></div>
+</section>
+
+<!-- FONTES -->
+<section class="section" id="fontes">
+    <div class="section-id">Seção 8 — Fontes de Recurso</div>
+    <div class="action-title">56,5% vêm de recursos próprios e 39,5% do FUNDEB próprio, totalizando 96% de fontes locais — transferências federais representam apenas 3,2%</div>
+    <div class="chart-container short"><canvas id="chartFontes"></canvas></div>
+</section>
+
+<!-- PESSOAL -->
+<section class="section" id="pessoal">
+    <div class="section-id">Seção 9 — Análise de Pessoal (Folha 2025)</div>
+    <div class="action-title">120 servidores (3.0%) recebem acima de R$ 10 mil; folha total de R$ 31.004.614</div>
+    
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;margin-bottom:1.5rem">
+        <div class="kpi-card" style="background:var(--azul-escuro);color:white">
+            <div class="kpi-label">Total Servidores</div>
+            <div class="kpi-value">4,020</div>
+        </div>
+        <div class="kpi-card" style="background:var(--azul-escuro);color:white">
+            <div class="kpi-label">Total Folha</div>
+            <div class="kpi-value">R$ 31,0M</div>
+            <div class="kpi-sub">R$ 31.004.614</div>
+        </div>
+        <div class="kpi-card" style="background:var(--azul-escuro);color:white">
+            <div class="kpi-label">Média por Servidor</div>
+            <div class="kpi-value">R$ 7.713</div>
+        </div>
+        <div class="kpi-card" style="background:var(--vermelho);color:white">
+            <div class="kpi-label">Acima R$ 10 mil</div>
+            <div class="kpi-value">120</div>
+            <div class="kpi-sub">3.0% dos servidores</div>
+        </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem">
+        <div>
+            <h4 style="color:var(--azul-escuro);margin-bottom:0.5rem;font-size:0.95rem">Distribuição de Proventos</h4>
+            <div class="chart-container short"><canvas id="chartHist"></canvas></div>
+        </div>
+        <div>
+            <h4 style="color:var(--azul-escuro);margin-bottom:0.5rem;font-size:0.95rem">Custo por Tipo de Contrato</h4>
+            <div class="chart-container short"><canvas id="chartTipos"></canvas></div>
+        </div>
+    </div>
+    <table class='data-table' style='margin-top:1rem'>
+            <thead><tr><th>Tipo de Contrato</th><th class='num-col'>Servidores</th><th class='num-col'>Total Proventos</th><th class='num-col'>% Folha</th></tr></thead>
+            <tbody><tr><td>SERV.PUBL.TITULAR DE CARGO EFETIVO</td><td class='num-col'>2003</td><td class='num-col'>R$ 9.617.210</td><td class='num-col'>31.0%</td></tr><tr><td>SERV.PUBL. CARGO TEMPORARIO</td><td class='num-col'>1778</td><td class='num-col'>R$ 4.802.072</td><td class='num-col'>15.5%</td></tr><tr><td>APOSENTADOS</td><td class='num-col'>205</td><td class='num-col'>R$ 970.579</td><td class='num-col'>3.1%</td></tr><tr><td>SERV.PUBL. CARGO COMISS.</td><td class='num-col'>12</td><td class='num-col'>R$ 68.664</td><td class='num-col'>0.2%</td></tr><tr><td>PENSIONISTA</td><td class='num-col'>7</td><td class='num-col'>R$ 29.900</td><td class='num-col'>0.1%</td></tr><tr><td>ESTAGIARIO</td><td class='num-col'>13</td><td class='num-col'>R$ 9.943</td><td class='num-col'>0.0%</td></tr><tr><td>SERV.PUBL. CONTRATADO</td><td class='num-col'>1</td><td class='num-col'>R$ 3.939</td><td class='num-col'>0.0%</td></tr></tbody></table>
+    <h4 style="color:var(--azul-escuro);margin:1.5rem 0 0.5rem;font-size:0.95rem">Top 10 Escolas por Custo de Pessoal</h4>
+    <div class="chart-container" style="height:320px"><canvas id="chartEscolas"></canvas></div>
+    <table class='data-table' style='margin-top:1rem'>
+            <thead><tr><th>#</th><th>Escola/Unidade</th><th class='num-col'>Servidores</th><th class='num-col'>Custo Total</th></tr></thead>
+            <tbody><tr><td>1</td><td>APOSENTADOS</td><td class='num-col'>185</td><td class='num-col'>R$ 904.184</td></tr><tr><td>2</td><td>SECRETARIA MUNICIPAL DE EDUCACAO</td><td class='num-col'>152</td><td class='num-col'>R$ 678.974</td></tr><tr><td>3</td><td>E. M. PROFESSOR GALVAO</td><td class='num-col'>121</td><td class='num-col'>R$ 478.156</td></tr><tr><td>4</td><td>NADIA LUCIA FERREIRA ALVES</td><td class='num-col'>85</td><td class='num-col'>R$ 373.038</td></tr><tr><td>5</td><td>E. M. DOUTOR MILTON CAMPOS</td><td class='num-col'>93</td><td class='num-col'>R$ 369.084</td></tr><tr><td>6</td><td>E. M. CLARINDO CASSIMIRO</td><td class='num-col'>87</td><td class='num-col'>R$ 368.578</td></tr><tr><td>7</td><td>CEIM DOUTOR JUVENAL MACHADO DE BARROS</td><td class='num-col'>79</td><td class='num-col'>R$ 360.825</td></tr><tr><td>8</td><td>E. M. LUCAS RODRIGO</td><td class='num-col'>87</td><td class='num-col'>R$ 358.391</td></tr><tr><td>9</td><td>E. M. LUZIA BARBOSA</td><td class='num-col'>83</td><td class='num-col'>R$ 339.267</td></tr><tr><td>10</td><td>E. M. PROFESSOR VASCO DAMIAO</td><td class='num-col'>92</td><td class='num-col'>R$ 336.148</td></tr></tbody></table>
+    
+</section>
+
+<!-- SÍNTESE ANALÍTICA -->
+<section class="section" id="sintese">
+    <div class="section-id">Síntese — Análise Consolidada</div>
+    <div class="action-title">Padrões cruzados que revelam o perfil de gestão da Secretaria de Educação</div>
+    <div class="analise-cruzada">A secretaria opera com rigidez orçamentária estrutural: 81% da despesa é folha de pagamento concentrada numa única ação (remuneração de ativos) e canalizada majoritariamente via o próprio Município como credor (75,3%), o que sugere que a folha transita internamente sem segregação clara de custos por escola ou programa. O pico de dezembro (R$48,5 mi, mais que o dobro da média de R$23,6 mi) coincide com o programa Universalização ter executado R$245,2 mi contra R$235,4 mi previstos — um estouro de 4,2% — enquanto programas como Educação Profissional e Nível Superior tiveram execução zero, revelando planejamento orçamentário descolado da realidade de alocação. A dependência de apenas 3,2% de transferências federais, combinada com investimentos de apenas R$1,96 mi (0,69%), indica que a secretaria não está captando recursos de programas federais de infraestrutura escolar (FNDE/PAR), desperdiçando oportunidades de alavancagem. A concentração em 5 fornecedores que absorvem 91,2% dos pagamentos, com destaque para a Arcolimp (R$4,9 mi em apenas 2 empenhos) e a Comercial Barcelona (R$3,3 mi em 6 empenhos), aponta para contratos de grande vulto com baixa pulverização competitiva, sinalizando maturidade de gestão de contratos ainda incipiente.</div>
+    <p class="alertas-titulo">⚠ Alertas Prioritários</p>
+    <div class="alerta-grid"><div class="alerta-card">Pico de R$48,5 mi em dezembro (205% da média mensal) indica provável acúmulo de liquidações e restos a pagar forçados no encerramento do exercício, comprometendo a transparência da execução real e inflando artificialmente a taxa de execução anual de 96,1%</div><div class="alerta-card">Programa Universalização executou R$9,8 mi acima do previsto (R$245,2 mi pagos vs R$235,4 mi previstos), enquanto 3 programas com dotação total de R$560 mil (Educação Profissional, Nível Superior e Trabalho/Emprego) tiveram execução zero — evidenciando falha no planejamento da LOA ou abandono de políticas aprovadas</div><div class="alerta-card">Investimentos de apenas R$1,96 mi (0,69% do total pago) com uma única obra identificável — Construção de Quadras Escolares com R$42,2 mil pagos — sinaliza paralisia na expansão e manutenção da infraestrutura escolar, com risco de deterioração patrimonial acelerada</div></div>
+</section>
+
+<!-- RECOMENDAÇÕES -->
+<section class="section" id="recomendacoes">
+    <div class="section-id">Seção 10 — Recomendações de Gestão</div>
+    <div class="action-title">Quatro ações prioritárias para melhorar a gestão de custos de Educação</div>
+    <div class="rec-grid">
+        <div class="rec-card">
+            <div class="rec-label">Recomendação 1</div>
+            <p class="rec-insight">Dezembro concentrou R$48,5 mi (17,1% do total anual), 4,65 vezes o valor de janeiro (R$10,4 mi), evidenciando acúmulo de obrigações no encerramento</p>
+            <p class="rec-implicacao">Esse padrão distorce o fluxo de caixa municipal, pressiona a tesouraria no fim do exercício e mascara a real capacidade de execução mensal da secretaria</p>
+            <p class="rec-acao">Implementar cronograma mensal de liquidação com meta de desvio máximo de 20% em relação à média, estabelecendo cortes trimestrais de revisão com a Fazenda a partir do 1º trimestre de 2026</p>
+        </div><div class="rec-card">
+            <div class="rec-label">Recomendação 2</div>
+            <p class="rec-insight">Transferências federais representam apenas 3,16% (R$8,96 mi) do total pago, enquanto 96% vêm de fontes próprias e FUNDEB local</p>
+            <p class="rec-implicacao">A secretaria subutiliza programas federais como PDDE, PAR e Brasil na Escola, perdendo capacidade de investimento sem onerar o tesouro municipal</p>
+            <p class="rec-acao">Criar célula dedicada de captação de recursos federais com meta de elevar transferências da União para ao menos 8% do orçamento (R$22,7 mi) no exercício de 2026, priorizando editais FNDE de infraestrutura e alimentação</p>
+        </div><div class="rec-card">
+            <div class="rec-label">Recomendação 3</div>
+            <p class="rec-insight">Os 5 maiores fornecedores concentram 91,23% dos pagamentos, com Arcolimp recebendo R$4,9 mi em apenas 2 empenhos e Comercial Barcelona R$3,3 mi em 6 empenhos</p>
+            <p class="rec-implicacao">Alta concentração em poucos contratos de grande vulto eleva risco de interrupção de serviços essenciais (limpeza, material escolar) e reduz poder de barganha em renovações</p>
+            <p class="rec-acao">Realizar mapeamento de mercado e dividir os próximos processos licitatórios de limpeza e material escolar em lotes regionais, visando ter no mínimo 3 fornecedores ativos por categoria até o 2º semestre de 2026</p>
+        </div><div class="rec-card">
+            <div class="rec-label">Recomendação 4</div>
+            <p class="rec-insight">Três programas com dotação aprovada de R$560,3 mil (Educação Profissional R$16,6 mil, Nível Superior R$4,4 mil e Trabalho/Emprego R$539,3 mil) tiveram execução zero em 2025</p>
+            <p class="rec-implicacao">Dotações não executadas indicam desalinhamento entre o PPA/LOA e a capacidade operacional da secretaria, comprometendo a credibilidade do planejamento perante o Legislativo e o TCE-MG</p>
+            <p class="rec-acao">Revisar o PPA 2026-2029 eliminando programas sem capacidade de execução comprovada e remanejando os R$560 mil para reforço de investimentos em infraestrutura escolar, onde a execução foi de apenas R$1,96 mi (0,69%)</p>
+        </div>
+    </div>
+</section>
+
+</div><!-- main-content -->
+
+<script>
+
+const CORES = {
+    principal: '#2E86AB', secundaria: '#A3CEF1',
+    verde: '#28A745', vermelho: '#E63946', amarelo: '#F4A261', cinza: '#6C757D',
+    palette: ['#1B3A5C','#2E86AB','#A3CEF1','#28A745','#F4A261','#E63946',
+              '#6C757D','#17BECF','#8C564B','#E377C2','#BCBD22','#9467BD',
+              '#D62728','#FF7F0E']
+};
+
+const formatBRL = v => {
+    if (v == null || isNaN(v)) return 'R$ 0';
+    return 'R$ ' + Math.round(v).toLocaleString('pt-BR');
+};
+const formatM = v => {
+    if (v == null || isNaN(v)) return 'R$ 0';
+    if (Math.abs(v) >= 1e9) return 'R$ ' + (v/1e9).toFixed(1).replace('.',',') + 'B';
+    if (Math.abs(v) >= 1e6) return 'R$ ' + (v/1e6).toFixed(1).replace('.',',') + 'M';
+    if (Math.abs(v) >= 1e3) return 'R$ ' + (v/1e3).toFixed(0) + ' mil';
+    return formatBRL(v);
+};
+
+Chart.defaults.font.family = 'system-ui, -apple-system, "Segoe UI", sans-serif';
+Chart.defaults.font.size   = 12;
+Chart.defaults.color       = '#343A40';
+
+// Nav scroll highlight
+window.addEventListener('scroll', () => {
+    const sections = document.querySelectorAll('.section[id], .hero[id]');
+    const navLinks = document.querySelectorAll('.nav-sidebar a');
+    let current = '';
+    sections.forEach(s => {
+        if (window.scrollY >= s.offsetTop - 120) current = s.id;
+    });
+    navLinks.forEach(a => {
+        a.classList.remove('active');
+        if (a.getAttribute('href') === '#' + current) a.classList.add('active');
+    });
+});
+
+
+// ---- DATA ----
+const PROG_LABELS   = ["2084 - UNIVERSALIZACAO", "2051 - GESTAO ADMINISTRATIVA", "2050 - OPERACOES ESPECIAIS", "2085 - EDUCACAO", "2055 - CORDENACAO DE POLITICAS", "2057 - PROMOCAO DOS DIREITOS DA CRIANCA", "2063 - EDUCACAO PROFISSIONAL E TECNOLOGIA", "2065 - TRABALHO EMPREGO E RENDA", "2064 - EDUCACAO NIVEL SUPERIOR"];
+const PROG_VALUES   = [245229394.57, 15199110.69, 14595756.46, 8685996.22, 71120.2, 825.88, 0.0, 0.0, 0.0];
+const NAT_LABELS    = ["Pessoal e Encargos", "Servi\u00e7os PJ", "Aposentadorias / Pens\u00f5es", "Outros", "Alimenta\u00e7\u00e3o", "Investimentos", "TI e Serv. Tecnol\u00f3gicos", "Materiais de Consumo", "Servi\u00e7os PF", "Material Expediente", "Limpeza e Higiene", "Manuten\u00e7\u00e3o", "Material Hospitalar", "Transf. Institui\u00e7\u00f5es Privadas"];
+const NAT_VALUES    = [230243540.23, 16162585.9, 14227868.11, 8784894.4, 7026913.83, 1964970.65, 1309636.81, 1302644.61, 1046440.37, 912994.88, 540382.83, 237389.31, 15514.09, 6428.0];
+const ACAO_LABELS   = ["2551 - REMUNER DE SERVIDORES ATIVOS E ENCARGOS", "2552 - PROVENTOS DE INATIVOS E PENSIONISTAS", "2648 - GEST DAS ESCOLAS DO ENSINO  FUNDAMENTAL", "2553 - GESTAO DO ORGAO", "2653 - APOIO AO TRANSPORTE ESCOLAR NA EDUCACAO", "2647 - SEGURANCA ALIMENTAR E NUTRICIONAL", "2650 - GESTAO DAS ESCOLAS DO ENSINO INFANTIL", "2637 - GESTAO DE TI E REDE INTEGRADA", "3550 - GESTAO DA DIVIDA FUNDADA CONTRATADA INTE", "2550 - REMUNERACAO DE AGENTES POLITICOS", "2725 - APOIAR ACOES PROERD", "1561 - CONSTRUCAO DE QUADRAS ESCOLARES", "2645 - APOIO AS ACOES DOS CONSELHOS DA EDUCACAO", "2646 - APOIO AS ACOES DA UNDIME", "2764 - IMPLEMENTA\u00c3\u00a7\u00c3\u00a3O DE ESTRAT\u00c3\u00a9GIAS PARA ERRADICA\u00c3\u00a7\u00c3", "2584 - PROG INCENTIVO A AUTONOMIA FINANC-FUMEP", "1560 - CONSTRUCAO DE CRECHES", "2586 - APROVEITAMENTO DAS HABILIDADES LABORAIS", "2585 - APOIO ENTIDADES DE ENS SUPERIOR PUBLICO", "2651 - PROGRAMA DE CAPACITACAO E QUALIFICACAO"];
+const ACAO_VALUES   = [230006618.69, 14227868.11, 9796651.77, 9666426.66, 7198292.53, 6869927.96, 3973214.23, 1309636.81, 367888.35, 236921.54, 71120.2, 42202.01, 8181.280000000001, 6428.0, 825.88, 0.0, 0.0, 0.0, 0.0, 0.0];
+const FORN_LABELS   = ["MUNICIPIO DE SETE LAGOAS", "INSTITUTO NACIONAL DO SEGURO SOCIAL", "ARCOLIMP SERVICOS GERAIS LTDA", "COMERCIAL ARTIGOS DE ESCRITORIO E PAPELARIA BARCELONA L", "BEEFALLO CARNES DO BRASIL LTDA", "CONSORCIO INTERMUNICIPAL DE SAUDE E DE POLITICAS DE DES", "VALORE AMBIENTAL LTDA", "NUVEM DISTRIBUIDORA LTDA", "COOPERATIVA DOS AGRICULTORES FAMILIARES DE JEQUITIBA  E", "LATICINIOS SANTA RITA LTDA", "GUILHERME SCUIRA", "INGLES FACIL EXPRESS LTDA", "PORT DISTRIBUIDORA DE INFORMATICA E PAPELARIA LTDA", "COOPERATIVA DOS AGRICULTORES FAMILIARES DE SETE LAGOAS ", "CODESEL COMPANHIA DE DESENVOLVIMENTO DE SETE LAGOAS", "SERVICO AUTONOMO DE AGUA, ESGOTO E SANEAMENTO URBANO", "ANDRADE TRANSPORTES E LOCACOES LTDA", "FUNDACAO EDUCACIONAL MONSENHOR MESSIAS", "THIAGO MARTINS RIBEIRO", "MV TERRAPLANAGEM E LOCACOES LTDA"];
+const FORN_VALUES   = [217070950.43, 35973997.67, 4911975.51, 3288997.1, 1670469.64, 1650589.88, 1040665.18, 925115.96, 828037.53, 786698.92, 689330.6, 685400.0, 684836.5, 632210.9, 622822.73, 565475.72, 530234.55, 525104.58, 489339.98, 466635.92];
+const CAT_LABELS    = ["Pessoal", "Servi\u00e7os terceirizados", "Previd\u00eancia", "Alimenta\u00e7\u00e3o", "Material expediente/pedag\u00f3gico", "Investimentos", "TI", "Transporte", "Outros", "Manuten\u00e7\u00e3o", "Limpeza", "Material hospitalar", "Transfer\u00eancias"];
+const CAT_VALUES    = [265517036.74, 22144631.95, 18007637.85, 8940188.67, 5609451.3, 4647300.42, 1630769.16, 1144942.81, 929378.3, 700112.86, 597191.96, 19640.09, 6428.0];
+const SERIE_LABELS  = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
+const SERIE_VALUES  = [10438888.79, 22450311.18, 20774887.67, 20202231.25, 22970723.18, 22047701.05, 22932173.96, 21905027.06, 23882041.41, 23330906.5, 24308613.01, 48538698.96];
+const SERIE_MEDIA   = 23648517.001666665;
+const FONTE_LABELS  = ["Recursos Pr\u00f3prios", "Recursos Pr\u00f3prios (FUNDEB)", "Transfer\u00eancias Federais", "FUNDEB", "OUTROS RECURSOS N\u00c3O VINCULADOS"];
+const FONTE_VALUES  = [160406301.22, 111971761.35, 8958100.55, 1689945.02, 756095.88];
+const PARETO_LABELS = ["MUNICIPIO DE SETE LAGOAS", "INSTITUTO NACIONAL DO SEGURO S", "ARCOLIMP SERVICOS GERAIS LTDA", "COMERCIAL ARTIGOS DE ESCRITORI", "BEEFALLO CARNES DO BRASIL LTDA", "CONSORCIO INTERMUNICIPAL DE SA", "VALORE AMBIENTAL LTDA", "NUVEM DISTRIBUIDORA LTDA", "COOPERATIVA DOS AGRICULTORES F", "LATICINIOS SANTA RITA LTDA", "GUILHERME SCUIRA", "INGLES FACIL EXPRESS LTDA", "PORT DISTRIBUIDORA DE INFORMAT", "COOPERATIVA DOS AGRICULTORES F", "CODESEL COMPANHIA DE DESENVOLV", "SERVICO AUTONOMO DE AGUA, ESGO", "ANDRADE TRANSPORTES E LOCACOES", "FUNDACAO EDUCACIONAL MONSENHOR", "THIAGO MARTINS RIBEIRO", "MV TERRAPLANAGEM E LOCACOES LT"];
+const PARETO_VALUES = [75.33, 87.81, 89.51, 90.65, 91.23, 91.8, 92.16, 92.48, 92.77, 93.04, 93.28, 93.52, 93.76, 93.98, 94.2, 94.4, 94.58, 94.76, 94.93, 95.09];
+const KPI_TOTAL     = 283782204.02;
+const HIST_LABELS   = ["At\u00e9 R$ 3k", "R$ 3\u20135k", "R$ 5\u20138k", "R$ 8\u201310k", "Acima R$ 10k"];
+const HIST_VALUES   = [1617, 1636, 525, 122, 120];
+const TIPO_LABELS   = ["SERV.PUBL.TITULAR DE CARGO EFE", "SERV.PUBL. CARGO TEMPORARIO", "APOSENTADOS", "SERV.PUBL. CARGO COMISS.", "PENSIONISTA", "ESTAGIARIO", "SERV.PUBL. CONTRATADO"];
+const TIPO_VALUES   = [9617209.79, 4802072.42, 970578.95, 68664.23, 29899.62, 9942.9, 3939.26];
+const ESCOLA_LABELS = ["APOSENTADOS", "SECRETARIA MUNICIPAL DE EDUCACAO", "E. M. PROFESSOR GALVAO", "NADIA LUCIA FERREIRA ALVES", "E. M. DOUTOR MILTON CAMPOS", "E. M. CLARINDO CASSIMIRO", "CEIM DOUTOR JUVENAL MACHADO DE BARROS", "E. M. LUCAS RODRIGO", "E. M. LUZIA BARBOSA", "E. M. PROFESSOR VASCO DAMIAO"];
+const ESCOLA_VALUES = [904184.5, 678973.73, 478156.22000000003, 373038.26, 369084.33, 368578.13, 360825.29, 358390.67, 339266.85, 336148.13];
+
+// ---- CHARTS ----
+// 1. Programas
+new Chart(document.getElementById('chartProg'), {
+    type: 'bar',
+    data: { labels: PROG_LABELS,
+        datasets: [{ data: PROG_VALUES, backgroundColor: '#2E86AB', borderRadius:4, barPercentage:0.7 }] },
+    options: {
+        indexAxis: 'y',
+        plugins: { legend:{display:false}, tooltip:{callbacks:{label: ctx=>formatBRL(ctx.raw)}} },
+        scales: { x:{ticks:{callback:v=>formatM(v)},grid:{display:false}}, y:{grid:{display:false}} }
+    }
+});
+
+// 2. Natureza
+new Chart(document.getElementById('chartNat'), {
+    type: 'doughnut',
+    data: { labels: NAT_LABELS,
+        datasets: [{ data: NAT_VALUES, backgroundColor: CORES.palette, borderWidth:2, borderColor:'#fff' }] },
+    options: {
+        cutout: '58%',
+        plugins: {
+            legend:{position:'right',labels:{font:{size:11}}},
+            tooltip:{callbacks:{label:ctx=>{
+                const tot=ctx.dataset.data.reduce((a,b)=>a+b,0);
+                return ctx.label+': '+formatBRL(ctx.raw)+' ('+(ctx.raw/tot*100).toFixed(1)+'%)';
+            }}}
+        }
+    }
+});
+
+// 3. Ações
+new Chart(document.getElementById('chartAcoes'), {
+    type:'bar',
+    data:{ labels:ACAO_LABELS,
+        datasets:[{ data:ACAO_VALUES,
+            backgroundColor:ACAO_VALUES.map((_,i)=>i===0?CORES.vermelho:CORES.principal),
+            borderRadius:4, barPercentage:0.65 }] },
+    options:{
+        indexAxis:'y',
+        plugins:{legend:{display:false},
+            tooltip:{callbacks:{label:ctx=>formatBRL(ctx.raw)+' ('+(ctx.raw/KPI_TOTAL*100).toFixed(1)+'%)'}}
+        },
+        scales:{x:{ticks:{callback:v=>formatM(v)},grid:{display:false}},
+                 y:{grid:{display:false},ticks:{font:{size:10}}}
+        }
+    }
+});
+
+// 4. Fornecedores
+new Chart(document.getElementById('chartForn'), {
+    type:'bar',
+    data:{ labels:FORN_LABELS,
+        datasets:[{ data:FORN_VALUES,
+            backgroundColor:FORN_VALUES.map((_,i)=>i<3?CORES.vermelho:CORES.principal),
+            borderRadius:4, barPercentage:0.65 }] },
+    options:{
+        indexAxis:'y',
+        plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>formatBRL(ctx.raw)}}},
+        scales:{x:{ticks:{callback:v=>formatM(v)},grid:{display:false}},y:{grid:{display:false},ticks:{font:{size:10}}}}
+    }
+});
+
+// 5. Pareto
+new Chart(document.getElementById('chartPareto'), {
+    type:'line',
+    data:{ labels:PARETO_LABELS,
+        datasets:[{label:'% Acumulado',data:PARETO_VALUES,
+            borderColor:CORES.vermelho,backgroundColor:CORES.vermelho+'20',
+            tension:0.2,fill:true,pointRadius:4}] },
+    options:{
+        plugins:{legend:{display:true},tooltip:{callbacks:{label:ctx=>ctx.raw.toFixed(1)+'%'}}},
+        scales:{x:{grid:{display:false},ticks:{font:{size:9},maxRotation:45}},y:{min:0,max:100,ticks:{callback:v=>v+'%'}}}
+    }
+});
+
+// 6. Categorias
+new Chart(document.getElementById('chartCat'), {
+    type:'doughnut',
+    data:{ labels:CAT_LABELS,
+        datasets:[{ data:CAT_VALUES, backgroundColor:CORES.palette, borderWidth:2, borderColor:'#fff' }] },
+    options:{
+        cutout:'55%',
+        plugins:{
+            legend:{position:'right',labels:{font:{size:11}}},
+            tooltip:{callbacks:{label:ctx=>{
+                const tot=ctx.dataset.data.reduce((a,b)=>a+b,0);
+                return ctx.label+': '+formatBRL(ctx.raw)+' ('+(ctx.raw/tot*100).toFixed(1)+'%)';
+            }}}
+        }
+    }
+});
+
+// 7. Evolução mensal
+new Chart(document.getElementById('chartMensal'), {
+    type:'line',
+    data:{ labels:SERIE_LABELS,
+        datasets:[
+            { label:'Valor Pago', data:SERIE_VALUES,
+               borderColor:CORES.principal, backgroundColor:CORES.principal+'25',
+               tension:0.3, fill:true,
+               pointBackgroundColor: SERIE_VALUES.map(v=>v===Math.max(...SERIE_VALUES)?CORES.vermelho:CORES.principal),
+               pointRadius: SERIE_VALUES.map(v=>v===Math.max(...SERIE_VALUES)?8:5) },
+            { label:'Média', data:SERIE_LABELS.map(()=>SERIE_MEDIA),
+               borderColor:CORES.amarelo, borderDash:[6,4], borderWidth:2, pointRadius:0, fill:false }
+        ] },
+    options:{
+        plugins:{legend:{display:true},tooltip:{callbacks:{label:ctx=>ctx.dataset.label+': '+formatBRL(ctx.raw)}}},
+        scales:{x:{grid:{display:false}},y:{ticks:{callback:v=>formatM(v)}}}
+    }
+});
+
+// 8. Fontes
+new Chart(document.getElementById('chartFontes'), {
+    type:'bar',
+    data:{ labels:FONTE_LABELS,
+        datasets:[{ data:FONTE_VALUES, backgroundColor:CORES.palette, borderRadius:4, barPercentage:0.65 }] },
+    options:{
+        indexAxis:'y',
+        plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>formatBRL(ctx.raw)}}},
+        scales:{x:{ticks:{callback:v=>formatM(v)},grid:{display:false}},y:{grid:{display:false}}}
+    }
+});
+
+// 9. Pessoal — histograma de proventos
+if (document.getElementById('chartHist') && HIST_LABELS.length > 0) {
+    new Chart(document.getElementById('chartHist'), {
+        type:'bar',
+        data:{ labels:HIST_LABELS,
+            datasets:[{ data:HIST_VALUES,
+                backgroundColor:['#28A745','#2E86AB','#F4A261','#E63946','#1B3A5C'],
+                borderRadius:4, barPercentage:0.7 }] },
+        options:{
+            plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>ctx.raw+' servidores'}}},
+            scales:{x:{grid:{display:false}},y:{ticks:{callback:v=>v+' serv.'}}}
+        }
+    });
+}
+
+// 10. Pessoal — por tipo de contrato
+if (document.getElementById('chartTipos') && TIPO_LABELS.length > 0) {
+    new Chart(document.getElementById('chartTipos'), {
+        type:'doughnut',
+        data:{ labels:TIPO_LABELS,
+            datasets:[{ data:TIPO_VALUES, backgroundColor:CORES.palette, borderWidth:2, borderColor:'#fff' }] },
+        options:{
+            cutout:'55%',
+            plugins:{
+                legend:{position:'bottom',labels:{font:{size:10}}},
+                tooltip:{callbacks:{label:ctx=>ctx.label+': '+formatBRL(ctx.raw)}}
+            }
+        }
+    });
+}
+
+// 11. Pessoal — top escolas
+if (document.getElementById('chartEscolas') && ESCOLA_LABELS.length > 0) {
+    new Chart(document.getElementById('chartEscolas'), {
+        type:'bar',
+        data:{ labels:ESCOLA_LABELS,
+            datasets:[{ data:ESCOLA_VALUES, backgroundColor:'#2E86AB', borderRadius:4, barPercentage:0.7 }] },
+        options:{
+            indexAxis:'y',
+            plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>formatBRL(ctx.raw)}}},
+            scales:{x:{ticks:{callback:v=>formatM(v)},grid:{display:false}},y:{grid:{display:false},ticks:{font:{size:10}}}}
+        }
+    });
+}
+</script>
+</body>
+</html>

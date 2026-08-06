@@ -1,0 +1,18 @@
+{
+  "secretaria": "saude",
+  "total_pago": 503204201.09000003,
+  "total_empenhado": 577684089.4399999,
+  "total_previsto": 583933738.0,
+  "num_fornecedores": 621,
+  "num_empenhos": 6209,
+  "meses_cobertos": 12,
+  "periodo": "Jan–Dez 2025",
+  "mes_pico": 12,
+  "mes_pico_nome": "Dez",
+  "valor_pico": 66205871.43,
+  "mes_vale": 1,
+  "mes_vale_nome": "Jan",
+  "valor_vale": 26224043.57,
+  "media_mensal": 41933683.424166664,
+  "programa_top": "2076 - MEDIA E ALTA COMPLEXIDADE - MAC"
+}
